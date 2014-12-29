@@ -14,6 +14,9 @@ import org.junit.Test;
  * @version $Revision$
  */
 public class TestIndexer {
+    /**
+     * Setup the logger.
+     */
     @BeforeClass
     public static void initLog() {
         BasicConfigurator.configure();
@@ -22,7 +25,7 @@ public class TestIndexer {
 
     /**
      * Regression tests for Indexer
-     * @exception InterruptException if the sleep fails...
+     * @throws InterruptedException if the sleep fails...
      */
     @Test
     public void test() throws InterruptedException {

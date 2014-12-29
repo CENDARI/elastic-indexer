@@ -14,6 +14,7 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
@@ -202,8 +203,7 @@ class Indexer {
                 logger.error("Mappings differ, should update");
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Cannot create json from string", e);
         }
     }
 
@@ -248,6 +248,14 @@ class Indexer {
     
     public String getIndexName() { return props.getProperty(ES_INDEX, "cendari"); }
     public String getTypeName() { return props.getProperty(ES_TYPE, "document"); }
-    
+
+    public boolean indexDocument(String document) {
+        checkESMapping();
+        IndexResponse res = es.prepareIndex(getIndexName(), getTypeName())
+                .setSource(document)
+                .execute()
+                .actionGet();
+        return res.isCreated();
+    }
 };
 
