@@ -1,5 +1,6 @@
 package fr.inria.aviz.elasticindexer;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,6 +22,9 @@ import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Singleton class, indexes documents.
  */
@@ -32,6 +36,7 @@ class Indexer {
     private Client es;
     private Node node;
     private boolean esChecked;
+    private ObjectMapper mapper = new ObjectMapper();
     
     public static final String ES_INDEX = "elasticindexer.elasticsearch.index";
     public static final String ES_TYPE = "elasticindexer.elasticsearch.type";
@@ -89,7 +94,13 @@ class Indexer {
     
     private void close() {
         node.close();
+        _close();
     }
+    
+    public void _close() {
+        esChecked = false;
+    }
+
     
     /**
      * Delete the index. Use with caution.
@@ -180,7 +191,20 @@ class Indexer {
             return;
         }
         MappingMetaData mdd = imd.mapping(getTypeName());
-        System.out.println("Mapping as JSON string:" + mdd.source());
+        
+//        if (json2json(mdd.source().toString()) != json2json(mapping)) {
+//            logger.error("Mappings differ, should update");
+//        }
+        try {
+            JsonNode mappingRoot = mapper.readTree(mapping);
+            JsonNode mddRoot = mapper.readTree(mdd.source().toString());
+            if (! mappingRoot.equals(mddRoot)) {
+                logger.error("Mappings differ, should update");
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private void createIndex(String mapping) throws ElasticsearchException {
@@ -194,6 +218,19 @@ class Indexer {
             logger.error("Index/Mapping not created for index "+getIndexName());
         }
     }
+    
+//    static public String json2json(String json) {
+//        try {
+//            XContentType xContentType = XContentType.JSON;
+//            XContentParser parser = xContentType.xContent().createParser(json);
+//            XContentBuilder builder = XContentFactory.jsonBuilder();
+//            builder.copyCurrentStructure(parser);
+//            return builder.string();
+//        }
+//        finally {
+//            return json;
+//        }
+//    }
 
     private String getMapping() {
         String mapping = null;
@@ -205,6 +242,7 @@ class Indexer {
         catch(Exception e) {
             logger.error("Cannot get cendari mapping file", e);
         }
+
         return mapping;
     }
     

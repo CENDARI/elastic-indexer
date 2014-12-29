@@ -22,13 +22,21 @@ public class TestIndexer {
 
     /**
      * Regression tests for Indexer
+     * @exception InterruptException if the sleep fails...
      */
     @Test
-    public void test() {
+    public void test() throws InterruptedException {
         Indexer indexer = Indexer.instance();
         
         assertNotNull(indexer);
         indexer._deleteIndex();
+        Thread.sleep(2000);
+        indexer.checkESMapping();
+        indexer._deleteMapping();
+        Thread.sleep(2000);
+        indexer.checkESMapping();
+        indexer._close();
+        Thread.sleep(2000);
         indexer.checkESMapping();
     }
 
