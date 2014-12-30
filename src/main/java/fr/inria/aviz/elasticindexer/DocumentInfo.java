@@ -4,15 +4,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,61 +24,85 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author Jean-Daniel Fekete
  */
-public class DocumentInfo {
-    private String application;
-    private String[] artifact;
-    private Person[] contributor;
-    private Person[] creator;
-    private String[] date;
-    private String[] event;
-    private String format;
-    private String[] language;
-    private String[] org;
-    private Person[] person;
-    private Place[] place;
-    private String[] publisher;
-    private String[] ref;
-    private String[] tag;
-    private String text;
-    private String[] title;
-    private String uri;
-    private String[] groups_allowed;
-    private String[] users_allowed;
-    private Map<String , Object> otherProperties = new HashMap<String , Object>();
+public class DocumentInfo extends HashMap<String , Object> {
+//    private String application;
+//    private String[] artifact;
+//    private Person[] contributor;
+//    private Person[] creator;
+//    private String[] date;
+//    private String[] event;
+//    private String format;
+//    private String[] language;
+//    private String[] org;
+//    private Person[] person;
+//    private Place[] place;
+//    private String[] publisher;
+//    private String[] ref;
+//    private String[] tag;
+//    private String text;
+//    private String[] title;
+//    private String uri;
+//    private String[] groups_allowed;
+//    private String[] users_allowed;
     /** Date printer for elasticsearch */
     @JsonIgnore
-    public final DateTimeFormatter DATE_PRINTER = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
-
+    public final static DateTimeFormatter DATE_PRINTER = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+    /** All the field names */
+    @JsonIgnore
+    public final static String[] FIELDS = {
+        "application",
+        "artifact",
+        "contributor",
+        "creator",
+        "date",
+        "event",
+        "format",
+        "language",
+        "org",
+        "person",
+        "place",
+        "publisher",
+        "ref",
+        "tag",
+        "text",
+        "title",
+        "uri",
+        "groups_allowed",
+        "users_allowed",
+    };
+    /** Set of fields */
+    @JsonIgnore
+    public final static Set<String> FIELDS_SET = new HashSet<>(Arrays.asList(FIELDS));
     
     /**
      * @return the application
      */
     public String getApplication() {
-        return application;
+        return (String)this.get("application");
     }
     /**
      * @param application the application to set
      */
     public void setApplication(String application) {
-        this.application = application;
+        this.put("application", application);
     }
     /**
      * @return the artifact
      */
     public String[] getArtifact() {
-        return artifact;
+        return (String[])this.get("artifact");
     }
     /**
      * @param artifact the artifact to set
      */
     public void setArtifact(String... artifact) {
-        this.artifact = artifact;
+        this.put("artifact", artifact);
     }
     /**
      * @return the contributor
      */
     public Person[] getContributor() {
-        return contributor;
+        return (Person[])this.get("contributor");
     }
     /**
      * @param name the contributor names to set
@@ -96,19 +119,19 @@ public class DocumentInfo {
      * @param contributor the contributor to set
      */
     public void setContributor(Person... contributor) {
-        this.contributor = contributor;
+        this.put("contributor", contributor);
     }
     /**
      * @return the creator
      */
     public Person[] getCreator() {
-        return creator;
+        return (Person[])this.get("creator");
     }
     /**
      * @param creator the creator to set
      */
     public void setCreator(Person... creator) {
-        this.creator = creator;
+        this.put("creator", creator);
     }
     
     /**
@@ -126,13 +149,13 @@ public class DocumentInfo {
      * @return the date
      */
     public String[] getDate() {
-        return date;
+        return (String[])this.get("date");
     }
     /**
      * @param date the date to set
      */
     public void setDate(String... date) {
-        this.date = date;
+        this.put("date", date);
     }
     
     /**
@@ -162,61 +185,61 @@ public class DocumentInfo {
      * @return the event
      */
     public String[] getEvent() {
-        return event;
+        return (String[])this.get("event");
     }
     /**
      * @param event the event to set
      */
     public void setEvent(String... event) {
-        this.event = event;
+        this.put("event", event);
     }
     /**
      * @return the format
      */
     public String getFormat() {
-        return format;
+        return (String)this.get("format");
     }
     /**
      * @param format the format to set
      */
     public void setFormat(String format) {
-        this.format = format;
+        this.put("format", format);
     }
     /**
      * @return the language
      */
     public String[] getLanguage() {
-        return language;
+        return (String[])this.get("language");
     }
     /**
      * @param language the language to set
      */
     public void setLanguage(String... language) {
-        this.language = language;
+        this.put("language", language);
     }
     /**
      * @return the org
      */
     public String[] getOrg() {
-        return org;
+        return (String[])this.get("org");
     }
     /**
      * @param org the org to set
      */
     public void setOrg(String... org) {
-        this.org = org;
+        this.put("org", org);
     }
     /**
      * @return the person
      */
     public Person[] getPerson() {
-        return person;
+        return (Person[])this.get("person");
     }
     /**
      * @param person the person to set
      */
     public void setPerson(Person ... person) {
-        this.person = person;
+        this.put("person", person);
     }
     
     /**
@@ -233,7 +256,7 @@ public class DocumentInfo {
      * @return the place
      */
     public Place[] getPlace() {
-        return place;
+        return (Place[]) this.get("place");
     }
     
     /**
@@ -250,130 +273,119 @@ public class DocumentInfo {
      * @param place the place to set
      */
     public void setPlace(Place ... place) {
-        this.place = place;
+        this.put("place", place);
     }
     /**
      * @return the publisher
      */
     public String[] getPublisher() {
-        return publisher;
+        return (String[]) this.get("publisher");
     }
     /**
      * @param publisher the publisher to set
      */
     public void setPublisher(String... publisher) {
-        this.publisher = publisher;
+        this.put("publisher", publisher);
     }
     /**
      * @return the ref
      */
     public String[] getRef() {
-        return ref;
+        return (String[])this.get("ref");
     }
     /**
      * @param ref the ref to set
      */
     public void setRef(String ... ref) {
-        this.ref = ref;
+        this.put("ref", ref);
     }
     /**
      * @return the tag
      */
     public String[] getTag() {
-        return tag;
+        return (String[])this.get("tag");
     }
     /**
      * @param tag the tag to set
      */
     public void setTag(String ... tag) {
-        this.tag = tag;
+        this.put("tag", tag);
     }
     /**
      * @return the text
      */
     public String getText() {
-        return text;
+        return (String)this.get("text");
     }
     /**
      * @param text the text to set
      */
     public void setText(String text) {
-        this.text = text;
+        this.put("text", text);
     }
     /**
      * @return the title
      */
     public String[] getTitle() {
-        return title;
+        return (String[])this.get("title");
     }
     /**
      * @param title the title to set
      */
     public void setTitle(String... title) {
-        this.title = title;
+        this.put("title", title);
     }
     /**
      * @return the uri
      */
     public String getUri() {
-        return uri;
+        return (String)this.get("uri");
     }
     /**
      * @param uri the uri to set
      */
     public void setUri(String uri) {
-        this.uri = uri;
+        this.put("uri", uri);
     }
     /**
      * @return the groups_allowed
      */
     public String[] getGroups_allowed() {
-        return groups_allowed;
+        return (String[])this.get("groups_allowed");
     }
     /**
      * @param groups_allowed the groups_allowed to set
      */
     public void setGroups_allowed(String... groups_allowed) {
-        this.groups_allowed = groups_allowed;
+        this.put("groups_allowed", groups_allowed);
     }
     /**
      * @return the users_allowed
      */
     public String[] getUsers_allowed() {
-        return users_allowed;
+        return (String[])this.get("users_allowed");
     }
     /**
      * @param users_allowed the users_allowed to set
      */
     public void setUsers_allowed(String... users_allowed) {
-        this.users_allowed = users_allowed;
+        this.put("users_allowed", users_allowed);
     }
     
     /**
-     * Return another property by name
-     * @param name property name
-     * @return property value
+     * {@inheritDoc}
      */
-    public Object get(String name) {
-        return otherProperties.get(name);
+    @Override
+    public Object get(Object key) {
+        return super.get(key);
     }
+    
     /**
-     * Return all the other properties.
-     * @return other properties
+     * {@inheritDoc}
      */
-    @JsonAnyGetter
-    public Map<String , Object> any() {
-        return otherProperties;
-    }
- 
-    /**
-     * Set a misc property
-     * @param name property name
-     * @param value property value
-     */
-    @JsonAnySetter
-    public void set(String name, Object value) {
-        otherProperties.put(name, value);
+    @Override
+    public Object put(String key, Object value) {
+        return super.put(key, value);
     }
 
     /**
@@ -410,30 +422,6 @@ public class DocumentInfo {
     public boolean equals(Object that) {
         if ( this == that) return true;
         if ( !(that instanceof DocumentInfo) ) return false;
-        DocumentInfo d = (DocumentInfo)that;
-        if (! ((application == d.application) || (application != null && application.equals(d.application))))
-            return false;
-        if (! ((format == d.format) || (format != null && format.equals(d.format))))
-            return false;
-        if (! ((text == d.text) || (text != null && text.equals(d.text))))
-            return false;
-        if (! ((uri == d.uri) || (uri != null && uri.equals(d.uri))))
-            return false;
-
-       return Arrays.equals(artifact, d.artifact) &&
-               Arrays.equals(contributor, d.contributor) &&
-               Arrays.equals(creator, d.creator) &&
-               Arrays.equals(date, d.date) &&
-               Arrays.equals(event, d.event) &&
-               Arrays.equals(language, d.language) &&
-               Arrays.equals(org, d.org) &&
-               Arrays.equals(person, d.person) &&
-               Arrays.equals(place, d.place) &&
-               Arrays.equals(publisher, d.publisher) &&
-               Arrays.equals(ref, d.ref) &&
-               Arrays.equals(tag, d.tag) &&
-               Arrays.equals(groups_allowed, d.groups_allowed) &&
-               Arrays.equals(users_allowed, d.users_allowed) &&
-               otherProperties.equals(d.otherProperties);
+        return super.equals(that);
     }
 }

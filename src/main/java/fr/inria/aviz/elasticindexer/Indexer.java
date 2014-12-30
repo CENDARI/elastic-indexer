@@ -376,7 +376,7 @@ public class Indexer {
             info.setPlace(new Place(null, latlon));
         }
         if (metadata.get(TikaCoreProperties.DESCRIPTION) != null)
-            info.set("description", metadata.get(TikaCoreProperties.DESCRIPTION));
+            info.put("description", metadata.get(TikaCoreProperties.DESCRIPTION));
         return info;
     }
 
