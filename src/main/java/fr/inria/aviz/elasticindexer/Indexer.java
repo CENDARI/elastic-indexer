@@ -3,12 +3,14 @@ package fr.inria.aviz.elasticindexer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
@@ -21,14 +23,15 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.common.io.stream.BytesStreamInput;
 import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -68,24 +71,20 @@ public class Indexer {
     public static Indexer instance() {
         if (instance_ == null) {
             instance_ = new Indexer();
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                public void run() {
-                    logger.info("Closing Indexer at Shutdown");
-                    instance_.close();
-                    instance_ = null;
-                }
-            }));
         }
         return instance_;
     }
 
     private Indexer() {
         loadProps();
-        connectES();
+        //connectES();
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        
     }
 
     private void connectES() {
+        if (es != null) return;
         //        TransportClient tes = new TransportClient();
         //        for (int i = 1; i < 100; i++) {
         //            String prop = "host"+i, 
@@ -96,6 +95,13 @@ public class Indexer {
         //        es = tes;
         node = NodeBuilder.nodeBuilder().node();
         es = node.client();
+        final Indexer that = this;
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                logger.info("Closing Indexer at Shutdown");
+                that.closeES();
+            }
+        }));
     }
 
     private void loadProps() {
@@ -108,9 +114,14 @@ public class Indexer {
             logger.error("Elasticindexer properties not found", e);
         }
     }
-    
-    private void close() {
+
+    /**
+     * Close the ElasticSearch connection.
+     */
+    public void closeES() {
+        if (es == null) return;
         node.close();
+        es = null;
         _close();
     }
 
@@ -123,6 +134,7 @@ public class Indexer {
      * Delete the index. Use with caution.
      */
     void _deleteIndex() {
+        connectES();
         esChecked = false;
         DeleteIndexResponse rep = null;
         try {
@@ -142,6 +154,7 @@ public class Indexer {
     }
     
     void _deleteMapping() {
+        connectES();
         esChecked = false;
         DeleteMappingResponse rep = null;
         rep = es.admin().indices().
@@ -161,6 +174,7 @@ public class Indexer {
     public void checkESMapping() {
         if (esChecked)
             return;
+        connectES();
         esChecked = true;
         String mapping = getMapping();
         IndexMetaData imd = null;
@@ -272,15 +286,31 @@ public class Indexer {
     }
     
     /**
+     * Returns the JSON serialization of the specified DocumentInfo.
+     * @param document the DocumentInfo
+     * @return a JSON string
+     * @throws JsonProcessingException if the serializer fails 
+     */
+    public String toJSON(DocumentInfo document) throws JsonProcessingException {
+        return document.toJSON(mapper);
+    }
+    
+    /**
      * Inserts the DocumentInfo
      * @param document the DocumentInfo
      * @return true if the entry has been created, false if it has been updated
      * @throws JsonProcessingException if the document has not been serialized correctly
      */
     public boolean indexDocument(DocumentInfo document) throws JsonProcessingException {
-        return indexDocument(document.toJSON(mapper));
+        return indexDocument(toJSON(document));
     }
     
+    /**
+     * Search for documents matching a specific query and filter.
+     * @param query the query or null
+     * @param filter the filter or null
+     * @return a list of JSON records
+     */
     public String[] searchDocument(QueryBuilder query, FilterBuilder filter) {
         checkESMapping();
         SearchRequestBuilder search = es.prepareSearch(getIndexName())
@@ -296,6 +326,58 @@ public class Indexer {
             ret[i++] = hit.getSourceAsString();
         }
         return ret;
+    }
+    
+    /**
+     * Parse a specified document using Tika and returns the related DocumentInfo.  
+     * @param name document name
+     * @param contentType document type or null if unknown
+     * @param content document content in memory as a byte array
+     * @param maxLength maximum length to parse or -1 to parse all
+     * @return a DocumentInfo structure filled with the right contents of null if tika has not been able to parse it.
+     */
+    public DocumentInfo parseDocument(String name, String contentType, byte[] content, int maxLength) {
+        Metadata metadata = new Metadata();
+        if (name != null) {
+            metadata.add(Metadata.RESOURCE_NAME_KEY, name);
+        }
+        if (contentType != null) {
+            metadata.add(Metadata.CONTENT_TYPE, contentType);
+        }
+
+        String parsedContent;
+        try {
+            parsedContent = tika.parseToString(new BytesStreamInput(content, false), metadata, maxLength);
+        } catch (IOException | TikaException e) {
+            logger.error("Tika parse exception for document "+name, e);
+            return null;
+        }
+        DocumentInfo info = new DocumentInfo();
+        info.setText(parsedContent);
+        info.setUri(name);
+        info.setFormat(metadata.get(Metadata.CONTENT_TYPE));
+        if (metadata.get(TikaCoreProperties.CREATED) != null)
+            info.setDate(metadata.get(TikaCoreProperties.CREATED));
+        if (metadata.get(TikaCoreProperties.TITLE) != null)
+            info.setTitle(metadata.get(TikaCoreProperties.TITLE));
+        if (metadata.get(TikaCoreProperties.CREATOR) != null)
+            info.setCreatorName(metadata.get(TikaCoreProperties.CREATOR));
+        if (metadata.get(TikaCoreProperties.CREATOR_TOOL) != null)
+            info.setApplication(metadata.get(TikaCoreProperties.CREATOR_TOOL));
+        if (metadata.get(TikaCoreProperties.KEYWORDS) != null)
+            info.setTag(metadata.get(TikaCoreProperties.KEYWORDS));
+        if (metadata.get(TikaCoreProperties.LANGUAGE) != null)
+            info.setLanguage(metadata.get(TikaCoreProperties.LANGUAGE));
+        if (metadata.get(TikaCoreProperties.LATITUDE)!= null && metadata.get(TikaCoreProperties.LONGITUDE) != null) {
+            String latlon = 
+                    metadata.get(TikaCoreProperties.LATITUDE) +
+                    ", "+
+                    metadata.get(TikaCoreProperties.LONGITUDE);
+            info.setPlace(new Place(null, latlon));
+        }
+        if (metadata.get(TikaCoreProperties.DESCRIPTION) != null)
+            info.set("description", metadata.get(TikaCoreProperties.DESCRIPTION));
+        return info;
     }
 
 };

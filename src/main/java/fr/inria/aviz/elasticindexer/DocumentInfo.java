@@ -41,6 +41,7 @@ public class DocumentInfo {
     private String[] ref;
     private String[] tag;
     private String text;
+    private String[] title;
     private String uri;
     private String[] groups_allowed;
     private String[] users_allowed;
@@ -298,6 +299,18 @@ public class DocumentInfo {
      */
     public void setText(String text) {
         this.text = text;
+    }
+    /**
+     * @return the title
+     */
+    public String[] getTitle() {
+        return title;
+    }
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String... title) {
+        this.title = title;
     }
     /**
      * @return the uri
