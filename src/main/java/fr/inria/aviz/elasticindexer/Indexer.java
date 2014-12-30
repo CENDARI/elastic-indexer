@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
+import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.elasticsearch.ElasticsearchException;
@@ -368,6 +369,11 @@ public class Indexer {
             info.setTag(metadata.get(TikaCoreProperties.KEYWORDS));
         if (metadata.get(TikaCoreProperties.LANGUAGE) != null)
             info.setLanguage(metadata.get(TikaCoreProperties.LANGUAGE));
+        else {
+            LanguageIdentifier langIdent = new LanguageIdentifier(parsedContent);
+//            if (langIdent.isReasonablyCertain())
+                info.setLanguage(langIdent.getLanguage());
+        }
         if (metadata.get(TikaCoreProperties.LATITUDE)!= null && metadata.get(TikaCoreProperties.LONGITUDE) != null) {
             String latlon = 
                     metadata.get(TikaCoreProperties.LATITUDE) +
