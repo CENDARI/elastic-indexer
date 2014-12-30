@@ -1,6 +1,7 @@
 package fr.inria.aviz.elasticindexer;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,7 @@ public class DocumentInfo {
     /** Date printer for elasticsearch */
     public final DateTimeFormatter DATE_PRINTER = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
+    
     /**
      * @return the application
      */
@@ -383,5 +385,40 @@ public class DocumentInfo {
      */
     public String toJSON(ObjectMapper mapper) throws JsonProcessingException {
         return mapper.writeValueAsString(this);
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object that) {
+        if ( this == that) return true;
+        if ( !(that instanceof DocumentInfo) ) return false;
+        DocumentInfo d = (DocumentInfo)that;
+        if (! ((application == d.application) || (application != null && application.equals(d.application))))
+            return false;
+        if (! ((format == d.format) || (format != null && format.equals(d.format))))
+            return false;
+        if (! ((text == d.text) || (text != null && text.equals(d.text))))
+            return false;
+        if (! ((uri == d.uri) || (uri != null && uri.equals(d.uri))))
+            return false;
+
+       return Arrays.equals(artifact, d.artifact) &&
+               Arrays.equals(contributor, d.contributor) &&
+               Arrays.equals(creator, d.creator) &&
+               Arrays.equals(date, d.date) &&
+               Arrays.equals(event, d.event) &&
+               Arrays.equals(language, d.language) &&
+               Arrays.equals(org, d.org) &&
+               Arrays.equals(person, d.person) &&
+               Arrays.equals(place, d.place) &&
+               Arrays.equals(publisher, d.publisher) &&
+               Arrays.equals(ref, d.ref) &&
+               Arrays.equals(tag, d.tag) &&
+               Arrays.equals(groups_allowed, d.groups_allowed) &&
+               Arrays.equals(users_allowed, d.users_allowed) &&
+               otherProperties.equals(d.otherProperties);
     }
 }

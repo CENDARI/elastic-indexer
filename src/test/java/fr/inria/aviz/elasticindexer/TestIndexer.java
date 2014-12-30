@@ -52,7 +52,7 @@ public class TestIndexer extends TestCase {
         
         assertNotNull(indexer);
         assertTrue(indexer.indexDocument(TestDocumentJSON.DOCUMENT_JSON_1));
-        
+        assertTrue(indexer.indexDocument(TestDocumentJSON.DOCUMENT_JSON_2));
     }
 
 }

@@ -69,6 +69,10 @@ public class TestDocumentJSON extends TestCase {
         assertNotNull(doc1);
         DocumentInfo doc2 = DocumentInfo.fromJSON(DOCUMENT_JSON_2, mapper);
         assertNotNull(doc2);
+        DocumentInfo doc3 = DocumentInfo.fromJSON(DOCUMENT_JSON_1, mapper);
+        assertEquals(doc1, doc3);
+        DocumentInfo doc4 = DocumentInfo.fromJSON(DOCUMENT_JSON_2, mapper);
+        assertEquals(doc2, doc4);
     }
 
 }
