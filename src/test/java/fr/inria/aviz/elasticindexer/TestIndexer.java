@@ -2,17 +2,19 @@ package fr.inria.aviz.elasticindexer;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Class TestIndexer
@@ -54,6 +56,19 @@ public class TestIndexer extends TestCase {
         assertFalse(indexer.indexDocument(doc1));
         doc1.setApplication("anotherapp");
         assertFalse(indexer.indexDocument(doc1));
+        Thread.sleep(2000);
+        String[] ret = indexer.searchDocument(null, null);
+        assertEquals(2, ret.length);
+//        for (String s : ret) {
+//            System.out.println(s);
+//        }
+        QueryBuilder langEn = QueryBuilders.termQuery("language", "en");
+        ret = indexer.searchDocument(langEn, null);
+        assertEquals(2, ret.length);
+//        for (String s : ret) {
+//            System.out.println(s);
+//        }
+        
     }
 
 }

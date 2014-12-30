@@ -3,6 +3,7 @@ package fr.inria.aviz.elasticindexer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -14,13 +15,19 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.search.SearchHit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -272,6 +279,23 @@ public class Indexer {
      */
     public boolean indexDocument(DocumentInfo document) throws JsonProcessingException {
         return indexDocument(document.toJSON(mapper));
+    }
+    
+    public String[] searchDocument(QueryBuilder query, FilterBuilder filter) {
+        checkESMapping();
+        SearchRequestBuilder search = es.prepareSearch(getIndexName())
+                .setTypes(getTypeName());
+        if (query != null)
+            search.setQuery(query);
+        if (filter != null)
+            search.setPostFilter(filter);
+        SearchResponse res = search.execute().actionGet();
+        String[] ret = new String[(int)res.getHits().getTotalHits()];
+        int i = 0;
+        for (SearchHit hit : res.getHits()) {
+            ret[i++] = hit.getSourceAsString();
+        }
+        return ret;
     }
 
 };
