@@ -13,6 +13,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -45,6 +46,7 @@ public class DocumentInfo {
     private String[] users_allowed;
     private Map<String , Object> otherProperties = new HashMap<String , Object>();
     /** Date printer for elasticsearch */
+    @JsonIgnore
     public final DateTimeFormatter DATE_PRINTER = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
     

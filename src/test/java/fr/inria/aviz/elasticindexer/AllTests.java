@@ -12,7 +12,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * Run all tests in the right order
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestDocumentJSON.class, TestIndexer.class })
+@SuiteClasses({ TestDocumentJSON.class, TestESConnection.class, TestIndexer.class })
 public class AllTests {
 
 } 

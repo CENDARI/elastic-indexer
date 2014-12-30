@@ -1,5 +1,12 @@
 package fr.inria.aviz.elasticindexer;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -23,36 +30,30 @@ public class TestIndexer extends TestCase {
         Logger.getRootLogger().setLevel(Level.INFO);
     }
 
+    
     /**
-     * Regression tests for Indexer
-     * @throws InterruptedException if the sleep fails...
+     * Test document indexing
+     * @throws IOException 
+     * @throws JsonMappingException 
+     * @throws JsonParseException 
+     * @throws InterruptedException 
      */
     @Test
-    public void testESMapping() throws InterruptedException {
+    public void testDocumentIndexing() throws JsonParseException, JsonMappingException, IOException, InterruptedException {
         Indexer indexer = Indexer.instance();
         
         assertNotNull(indexer);
         indexer._deleteIndex();
         Thread.sleep(2000);
-        indexer.checkESMapping();
-        indexer._deleteMapping();
-        Thread.sleep(2000);
-        indexer.checkESMapping();
-        indexer._close();
-        Thread.sleep(2000);
-        indexer.checkESMapping();
-    }
-    
-    /**
-     * Test document indexing
-     */
-    @Test
-    public void testDocumentIndexing() {
-        Indexer indexer = Indexer.instance();
-        
-        assertNotNull(indexer);
         assertTrue(indexer.indexDocument(TestDocumentJSON.DOCUMENT_JSON_1));
         assertTrue(indexer.indexDocument(TestDocumentJSON.DOCUMENT_JSON_2));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        DocumentInfo doc1 = DocumentInfo.fromJSON(TestDocumentJSON.DOCUMENT_JSON_1, mapper);
+        assertNotNull(doc1);
+        assertFalse(indexer.indexDocument(doc1));
+        doc1.setApplication("anotherapp");
+        assertFalse(indexer.indexDocument(doc1));
     }
 
 }

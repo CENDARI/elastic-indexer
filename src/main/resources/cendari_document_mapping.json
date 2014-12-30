@@ -1,5 +1,8 @@
 {
     "document" : {
+	"_id" : {
+            "path" : "uri"
+        },
         "properties" : {
             "application" : {
 		"type" : "string",
