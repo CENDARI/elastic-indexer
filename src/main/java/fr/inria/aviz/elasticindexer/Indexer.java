@@ -3,10 +3,9 @@ package fr.inria.aviz.elasticindexer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
 import org.elasticsearch.ElasticsearchException;
@@ -23,13 +22,19 @@ import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 
 /**
  * Singleton class, indexes documents.
+ * 
+ * Indexer is a Facade to elasticsearch for indexing documents.
  */
-class Indexer {
+public class Indexer {
     private static Logger logger = Logger.getLogger(Indexer.class.getName());
     private static Indexer instance_;
     private final Tika tika = new Tika();
@@ -39,13 +44,18 @@ class Indexer {
     private boolean esChecked;
     private ObjectMapper mapper = new ObjectMapper();
     
+    /** Resource name for the main index */
     public static final String ES_INDEX = "elasticindexer.elasticsearch.index";
+    /** Resource name for the document type */
     public static final String ES_TYPE = "elasticindexer.elasticsearch.type";
+    /** Resource name for the elasticsearch host name, defaults to localhost */
     public static final String ES_HOST1 = "elasticindexer.elasticsearch.host1";
+    /** Resource name for the elasticsearch port number, defaults to 9300 */
     public static final String ES_PORT1 = "elasticindexer.elasticsearch.port1";
+    /** Resource name for the second elasticsearch host name, defaults to none */
     public static final String ES_HOST2 = "elasticindexer.elasticsearch.host2";
+    /** Resource name for the second elasticsearch port number, defaults to 9300 */
     public static final String ES_PORT2 = "elasticindexer.elasticsearch.port2";
-    
 
     /**
      * @return the Indexer singleton instance, creating it if necessary. 
@@ -67,6 +77,7 @@ class Indexer {
     private Indexer() {
         loadProps();
         connectES();
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
     }
 
     private void connectES() {
@@ -97,8 +108,8 @@ class Indexer {
         node.close();
         _close();
     }
-    
-    public void _close() {
+
+    void _close() {
         esChecked = false;
     }
 
@@ -106,7 +117,7 @@ class Indexer {
     /**
      * Delete the index. Use with caution.
      */
-    public void _deleteIndex() {
+    void _deleteIndex() {
         esChecked = false;
         DeleteIndexResponse rep = null;
         try {
@@ -125,7 +136,7 @@ class Indexer {
         }
     }
     
-    public void _deleteMapping() {
+    void _deleteMapping() {
         esChecked = false;
         DeleteMappingResponse rep = null;
         rep = es.admin().indices().
@@ -193,9 +204,6 @@ class Indexer {
         }
         MappingMetaData mdd = imd.mapping(getTypeName());
         
-//        if (json2json(mdd.source().toString()) != json2json(mapping)) {
-//            logger.error("Mappings differ, should update");
-//        }
         try {
             JsonNode mappingRoot = mapper.readTree(mapping);
             JsonNode mddRoot = mapper.readTree(mdd.source().toString());
@@ -218,26 +226,14 @@ class Indexer {
             logger.error("Index/Mapping not created for index "+getIndexName());
         }
     }
-    
-//    static public String json2json(String json) {
-//        try {
-//            XContentType xContentType = XContentType.JSON;
-//            XContentParser parser = xContentType.xContent().createParser(json);
-//            XContentBuilder builder = XContentFactory.jsonBuilder();
-//            builder.copyCurrentStructure(parser);
-//            return builder.string();
-//        }
-//        finally {
-//            return json;
-//        }
-//    }
 
     private String getMapping() {
         String mapping = null;
         try {
             ClassLoader classLoader = getClass().getClassLoader();
-            byte encoded[] = Files.readAllBytes(Paths.get(classLoader.getResource("cendari_document_mapping.json").getPath()));
-            mapping = new String(encoded, StandardCharsets.UTF_8);
+            mapping = IOUtils.toString(
+                    classLoader.getResource("cendari_document_mapping.json"),
+                    StandardCharsets.UTF_8);
         }
         catch(Exception e) {
             logger.error("Cannot get cendari mapping file", e);
@@ -245,10 +241,22 @@ class Indexer {
 
         return mapping;
     }
-    
+
+    /**
+     * @return the index name
+     */
     public String getIndexName() { return props.getProperty(ES_INDEX, "cendari"); }
+    
+    /**
+     * @return the document type name
+     */
     public String getTypeName() { return props.getProperty(ES_TYPE, "document"); }
 
+    /**
+     * Inserts the specific JSON representation of a DocumentInfo
+     * @param document the json string
+     * @return true if the entry has been created, false if it has been updated
+     */
     public boolean indexDocument(String document) {
         checkESMapping();
         IndexResponse res = es.prepareIndex(getIndexName(), getTypeName())
@@ -257,5 +265,16 @@ class Indexer {
                 .actionGet();
         return res.isCreated();
     }
+    
+    /**
+     * Inserts the DocumentInfo
+     * @param document the DocumentInfo
+     * @return true if the entry has been created, false if it has been updated
+     * @throws JsonProcessingException if the document has not been serialized correctly
+     */
+    public boolean indexDocument(DocumentInfo document) throws JsonProcessingException {
+        return indexDocument(document.toJSON(mapper));
+    }
+
 };
 
