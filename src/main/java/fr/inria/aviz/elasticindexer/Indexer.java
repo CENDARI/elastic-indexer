@@ -26,7 +26,9 @@ import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.io.stream.BytesStreamInput;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
@@ -316,10 +318,11 @@ public class Indexer {
         checkESMapping();
         SearchRequestBuilder search = es.prepareSearch(getIndexName())
                 .setTypes(getTypeName());
+        if (filter != null) {
+            query = QueryBuilders.filteredQuery(query, filter);
+        }
         if (query != null)
             search.setQuery(query);
-        if (filter != null)
-            search.setPostFilter(filter);
         SearchResponse res = search.execute().actionGet();
         String[] ret = new String[(int)res.getHits().getTotalHits()];
         int i = 0;
