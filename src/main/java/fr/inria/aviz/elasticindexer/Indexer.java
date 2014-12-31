@@ -331,16 +331,30 @@ public class Indexer {
         }
         return ret;
     }
-    
+
     /**
-     * Parse a specified document using Tika and returns the related DocumentInfo.  
+     * Parse a specified document using Tika and returns the related DocumentInfo. 
+     * 
      * @param name document name
      * @param contentType document type or null if unknown
-     * @param content document content in memory as a byte array
+     * @param content document as a byte array
      * @param maxLength maximum length to parse or -1 to parse all
      * @return a DocumentInfo structure filled with the right contents of null if tika has not been able to parse it.
      */
     public DocumentInfo parseDocument(String name, String contentType, byte[] content, int maxLength) {
+        return parseDocument(name, contentType, new BytesStreamInput(content, false), maxLength);
+    }
+
+    /**
+     * Parse a specified document using Tika and returns the related DocumentInfo. 
+     * 
+     * @param name document name
+     * @param contentType document type or null if unknown
+     * @param content document stream, which will be closed at the end of the call
+     * @param maxLength maximum length to parse or -1 to parse all
+     * @return a DocumentInfo structure filled with the right contents of null if tika has not been able to parse it.
+     */
+    public DocumentInfo parseDocument(String name, String contentType, InputStream content, int maxLength) {
         Metadata metadata = new Metadata();
         if (name != null) {
             metadata.add(Metadata.RESOURCE_NAME_KEY, name);
@@ -351,7 +365,7 @@ public class Indexer {
 
         String parsedContent;
         try {
-            parsedContent = tika.parseToString(new BytesStreamInput(content, false), metadata, maxLength);
+            parsedContent = tika.parseToString(content, metadata, maxLength);
         } catch (IOException | TikaException e) {
             logger.error("Tika parse exception for document "+name, e);
             return null;
