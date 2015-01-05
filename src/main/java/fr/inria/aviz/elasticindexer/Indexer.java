@@ -21,12 +21,14 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.io.stream.BytesStreamInput;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
@@ -51,7 +53,7 @@ public class Indexer {
     private final Tika tika = new Tika();
     private final Properties props = new Properties();
     private Client es;
-    private Node node;
+    private Node node = null;
     private boolean esChecked;
     private ObjectMapper mapper = new ObjectMapper();
     
@@ -59,6 +61,8 @@ public class Indexer {
     public static final String ES_INDEX = "elasticindexer.elasticsearch.index";
     /** Resource name for the document type */
     public static final String ES_TYPE = "elasticindexer.elasticsearch.type";
+    /** Resource name for the elasticsearch cluster name */
+    public static final String ES_CLUSTER = "elasticindexer.elasticsearch.cluster";
     /** Resource name for the elasticsearch host name, defaults to localhost */
     public static final String ES_HOST1 = "elasticindexer.elasticsearch.host1";
     /** Resource name for the elasticsearch port number, defaults to 9300 */
@@ -80,7 +84,6 @@ public class Indexer {
 
     private Indexer() {
         loadProps();
-        //connectES();
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         mapper.setSerializationInclusion(Include.NON_NULL);
         
@@ -88,16 +91,42 @@ public class Indexer {
 
     private void connectES() {
         if (es != null) return;
-        //        TransportClient tes = new TransportClient();
-        //        for (int i = 1; i < 100; i++) {
-        //            String prop = "host"+i, 
-        //                    host = props.getProperty(prop);
-        //            if (host == null) break;
-        //            tes.addTransportAddress(new InetSocketTransportAddress(host, 9300));
-        //        }
-        //        es = tes;
-        node = NodeBuilder.nodeBuilder().node();
-        es = node.client();
+        String cluster = props.getProperty(ES_CLUSTER, "elasticsearch"),
+                host1 = props.getProperty(ES_HOST1);
+
+        if (host1 != null) {
+            String port1 = props.getProperty(ES_PORT1);
+            int port = 9300;
+            if (port1 != null) try {
+                port = Integer.parseInt(port1);
+            }
+            catch(NumberFormatException e) {
+                logger.error("Invalid port number for "+ES_PORT1+": "+port1, e);
+            }
+            TransportClient tes = new TransportClient(ImmutableSettings.settingsBuilder()
+                    .put("cluster.name", cluster)
+                    .build());
+            tes.addTransportAddress(new InetSocketTransportAddress(host1, port));
+            
+            String host2 =  props.getProperty(ES_HOST2),
+                    port2 = props.getProperty(ES_PORT2);
+
+            if (host2 != null) {
+                port = 9300;
+                if (port2 != null) try {
+                    port = Integer.parseInt(port2);
+                }
+                catch(NumberFormatException e) {
+                    logger.error("Invalid port number for "+ES_PORT2+": "+port2, e);
+                }
+                tes.addTransportAddress(new InetSocketTransportAddress(host2, port));
+            }
+            es = tes;
+        }
+        else {
+            node = NodeBuilder.nodeBuilder().clusterName(cluster).node();
+            es = node.client();
+        }
         final Indexer that = this;
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
@@ -123,8 +152,12 @@ public class Indexer {
      */
     public void closeES() {
         if (es == null) return;
-        node.close();
+        if (node != null)
+            node.close();
+        else
+            es.close();
         es = null;
+        node = null;
         _close();
     }
 
