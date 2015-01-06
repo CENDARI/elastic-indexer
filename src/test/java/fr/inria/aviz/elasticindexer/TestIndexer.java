@@ -43,7 +43,8 @@ public class TestIndexer extends TestCase {
     @Test
     public void testDocumentIndexing() throws JsonParseException, JsonMappingException, IOException, InterruptedException {
         Indexer indexer = Indexer.instance();
-        
+
+        //TODO: this test does not work in isolation. It seems that the index is not cleared on _deleteIndex
         assertNotNull(indexer);
         indexer._deleteIndex();
         Thread.sleep(2000);
@@ -56,7 +57,7 @@ public class TestIndexer extends TestCase {
         assertFalse(indexer.indexDocument(doc1));
         doc1.setApplication("anotherapp");
         assertFalse(indexer.indexDocument(doc1));
-        Thread.sleep(2000);
+        indexer.refreshIndex();
         String[] ret = indexer.searchDocument(null, null);
         assertEquals(2, ret.length);
 //        for (String s : ret) {

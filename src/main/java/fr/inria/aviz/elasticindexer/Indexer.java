@@ -17,6 +17,7 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -187,6 +188,10 @@ public class Indexer {
         if (! rep.isAcknowledged()) {
             logger.error("Index "+getIndexName()+" has not been deleted");
         }
+//        es.admin().indices()
+//            .prepareFlush(getIndexName())
+//            .execute()
+//            .actionGet();
     }
     
     void _deleteMapping() {
@@ -295,6 +300,17 @@ public class Indexer {
         }
 
         return mapping;
+    }
+    
+    /**
+     * Refresh the index immediately (it is refreshed every second otherwise).
+     */
+    public void refreshIndex() {
+        checkESMapping();
+        es.admin()
+            .indices()
+            .refresh(new RefreshRequest(getIndexName()))
+            .actionGet();
     }
 
     /**
