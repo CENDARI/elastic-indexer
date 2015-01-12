@@ -20,6 +20,9 @@ import org.apache.tika.sax.TextContentHandler;
 import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+import fr.inria.aviz.elasticindexer.tika.xml.EACContentHandler;
+import fr.inria.aviz.elasticindexer.tika.xml.EADContentHandler;
+import fr.inria.aviz.elasticindexer.tika.xml.TEIContentHandler;
 
 /**
  * Class KnownXMLParser
@@ -77,6 +80,22 @@ public class KnownXMLParser extends AbstractParser {
 
     protected ContentHandler getContentHandler(
             ContentHandler handler, Metadata metadata, ParseContext context) {
-        return new TextContentHandler(handler, true);
+        ContentHandler defaultContentHandler = new TextContentHandler(handler, true);
+        String contentType = metadata.get(Metadata.CONTENT_TYPE);
+        
+        if (contentType.equals("application/ead+xml"))
+            return EADContentHandler.getContentHandler(
+                    defaultContentHandler, handler, metadata, context);
+        else if (contentType.equals("application/eag+xml"))
+            return EADContentHandler.getContentHandler(
+                    defaultContentHandler, handler, metadata, context);
+        else if (contentType.equals("application/eac+xml"))
+            return EACContentHandler.getContentHandler(
+                    defaultContentHandler, handler, metadata, context);
+        else if (contentType.equals("application/tei+xml"))
+            return TEIContentHandler.getContentHandler(
+                    defaultContentHandler, handler, metadata, context);
+        else
+            return defaultContentHandler;
     }
 }
