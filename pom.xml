@@ -4,7 +4,7 @@
   <artifactId>elastic-indexer</artifactId>
   <packaging>jar</packaging>
   <name>Cendari ElasticSearch Indexer</name>
-  <version>0.0.3</version>
+  <version>0.0.4-SNAPSHOT</version>
   <url>http://github.com/CENDARI/elastic-indexer</url>
   <inceptionYear>2014</inceptionYear>
 
@@ -19,7 +19,7 @@
         <connection>scm:git:git@github.com:CENDARI/elastic-indexer.git</connection>
         <developerConnection>scm:git:git@github.com:CENDARI/elastic-indexer.git</developerConnection>
         <url>http://github.com/CENDARI/elastic-indexer</url>
-      <tag>elastic-indexer-0.0.3</tag>
+      <tag>HEAD</tag>
   </scm>
   
   <properties>
