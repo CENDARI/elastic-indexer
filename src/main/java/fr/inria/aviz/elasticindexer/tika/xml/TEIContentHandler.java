@@ -39,6 +39,7 @@ public class TEIContentHandler {
         return new TeeContentHandler(
                 defaultHandler,
                 getTEIHandler(metadata, TikaCoreProperties.TITLE, "title"),
+                //TODO check the specific TEI elements
                 getTEIHandler(metadata, TikaCoreProperties.KEYWORDS, "subject"),
                 getTEIHandler(metadata, TikaCoreProperties.CREATOR, "creator"),
                 getTEIHandler(metadata, TikaCoreProperties.DESCRIPTION, "description"),

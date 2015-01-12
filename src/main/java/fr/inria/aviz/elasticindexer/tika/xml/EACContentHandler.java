@@ -9,9 +9,10 @@ import org.xml.sax.ContentHandler;
  * Class EACContentHandler
  * 
  * @author Jean-Daniel Fekete
- * @version $Revision$
+ *
  */
 public class EACContentHandler {
+    //TODO
     /**
      * 
      * @param defaultHandler

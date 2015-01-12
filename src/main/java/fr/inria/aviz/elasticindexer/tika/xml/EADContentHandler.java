@@ -12,6 +12,7 @@ import org.xml.sax.ContentHandler;
  * @version $Revision$
  */
 public class EADContentHandler {
+    //TODO
     /**
      * 
      * @param defaultHandler
