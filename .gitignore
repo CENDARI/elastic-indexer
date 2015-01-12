@@ -13,7 +13,9 @@ target/
 hs_err_pid*
 .classpath
 .project
+.pydevproject
 .settings/
 data/
 *~
 /target/
+cendari_resources.json.gz

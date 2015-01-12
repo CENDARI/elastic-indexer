@@ -303,6 +303,13 @@ public class Indexer {
     }
     
     /**
+     * @return the mapper
+     */
+    public ObjectMapper getMapper() {
+        return mapper;
+    }
+    
+    /**
      * Refresh the index immediately (it is refreshed every second otherwise).
      */
     public void refreshIndex() {
@@ -433,6 +440,15 @@ public class Indexer {
             info.setApplication(metadata.get(TikaCoreProperties.CREATOR_TOOL));
         if (metadata.get(TikaCoreProperties.KEYWORDS) != null)
             info.setTag(metadata.get(TikaCoreProperties.KEYWORDS));
+        if (metadata.get("Application-Name") != null)
+            info.setApplication(metadata.get(metadata.get("Application-Name")));
+        if (metadata.get(TikaCoreProperties.PUBLISHER) != null)
+            info.setPublisher(metadata.get(TikaCoreProperties.PUBLISHER));
+        if (metadata.get("Creation-date") != null)
+            info.addDate(metadata.get("Creation-date"));
+        if (metadata.get(TikaCoreProperties.MODIFIED) != null)
+            info.addDate(metadata.get(TikaCoreProperties.MODIFIED));
+
         if (metadata.get(TikaCoreProperties.LANGUAGE) != null)
             info.setLanguage(metadata.get(TikaCoreProperties.LANGUAGE));
         else {

@@ -1,6 +1,7 @@
 package fr.inria.aviz.elasticindexer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -156,6 +157,25 @@ public class DocumentInfo extends HashMap<String , Object> {
      */
     public void setDate(String... date) {
         this.put("date", date);
+    }
+    
+    /**
+     * Adds dates
+     * @param date
+     */
+    public void addDate(String... date) {
+        String[] newdate;
+        if (this.get("date") != null) {
+            
+            ArrayList<String> buf = new ArrayList<>(
+                    Arrays.asList((String[])this.get("date")));
+            buf.addAll(Arrays.asList(date));
+            newdate = new String[buf.size()];
+            buf.toArray(newdate);
+        }
+        else
+            newdate = date;
+        this.put("date", newdate);
     }
     
     /**
