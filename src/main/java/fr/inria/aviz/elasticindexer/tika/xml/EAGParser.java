@@ -56,17 +56,14 @@ private static final String NAMESPACE_URI_EAG = "http://www.ministryculture.es/"
                 getEAGHandler(metadata, TikaCoreProperties.DESCRIPTION, 
                         "description"),
                 //getEADHandler(metadata, TikaCoreProperties.PUBLISHER, "publisher"),
-                 new ContextualElementMetadataHandler(
-                                TEIParser.NAMESPACE_URI_TEI, 
-                                "persName",
-                                metadata, 
-                                TikaCoreProperties.CONTRIBUTOR,
-                                "respevent", "person"),                        
                 //getEADHandler(metadata, TikaCoreProperties.CREATED, "date"),
                 //getEADHandler(metadata, TikaCoreProperties.TYPE, "type"),
                 //getEADHandler(metadata, TikaCoreProperties.FORMAT, "format"),
                 getEAGHandler(metadata, TikaCoreProperties.IDENTIFIER, "repositoryid"),
-                getEAGHandler(metadata, TikaCoreProperties.RIGHTS, "licence"),
+                //getEAGHandler(metadata, TikaCoreProperties.RIGHTS, "licence"),
+                getEAGHandler(metadata, CendariProperties.PLACE, "location", "desc"),
+                TEIParser.getTEIHandler(metadata, TikaCoreProperties.CONTRIBUTOR,
+                        "persName", "respevent", "person"),
                 new AttributeMetadataHandler(NAMESPACE_URI_XML, "lang", metadata, 
                         CendariProperties.LANG)
         );

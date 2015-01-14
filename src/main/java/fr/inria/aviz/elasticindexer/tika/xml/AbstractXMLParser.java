@@ -2,7 +2,14 @@ package fr.inria.aviz.elasticindexer.tika.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Iterator;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.CloseShieldInputStream;
@@ -25,6 +32,7 @@ import org.xml.sax.SAXException;
 public abstract class AbstractXMLParser extends AbstractParser {
     protected static final String NAMESPACE_URI_XML = "http://www.w3.org/XML/1998/namespace";
     
+    protected URL transformer;
     
     /**
      * {@inheritDoc}
@@ -46,11 +54,25 @@ public abstract class AbstractXMLParser extends AbstractParser {
 
         TaggedContentHandler tagged = new TaggedContentHandler(handler);
         try {
-            context.getSAXParser().parse(
-                    new CloseShieldInputStream(stream),
-                    new OfflineContentHandler(new EmbeddedContentHandler(
-                            getContentHandler(tagged, metadata, context))));
-        } catch (SAXException e) {
+            InputStream in = new CloseShieldInputStream(stream);
+            OfflineContentHandler out = new OfflineContentHandler(
+                    new EmbeddedContentHandler(
+                            getContentHandler(tagged, metadata, context)));
+            
+            if (transformer != null) {
+                TransformerFactory factory = TransformerFactory.newInstance();
+                
+                Source xsl = new StreamSource(transformer.openStream(),transformer.toString());
+                Transformer transformer = factory.newTransformer(xsl);
+                
+                transformer.transform(
+                        new StreamSource(in), 
+                        new SAXResult(out));
+            }
+            else {
+                context.getSAXParser().parse(in, out);
+            }
+        } catch (Exception e) {
             tagged.throwIfCauseOf(e);
             throw new TikaException("XML parse error", e);
         } finally {

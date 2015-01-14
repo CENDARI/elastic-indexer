@@ -14,6 +14,8 @@ public class CendariProperties {
     //private static final String NAMESPACE_URI_XML = "http://www.w3.org/XML/1998/namespace";
     private static final String PREFIX_XML = "xml";
     
+    private static final String PREFIX_CENDARI = "cendari";
+    
     /**
      * A language of the intellectual content of the resource. Recommended
      * best practice is to use RFC 3066 [RFC3066], which, in conjunction
@@ -24,4 +26,16 @@ public class CendariProperties {
     public static final Property LANG = Property.internalTextBag(
             PREFIX_XML + Metadata.NAMESPACE_PREFIX_DELIMITER + "lang");
     
+    /**
+     * 
+     */
+    public static final Property PLACE = Property.internalTextBag(
+            PREFIX_CENDARI + Metadata.NAMESPACE_PREFIX_DELIMITER + "place");
+
+    /**
+     * 
+     */
+    public static final Property PERSON = Property.internalTextBag(
+            PREFIX_CENDARI + Metadata.NAMESPACE_PREFIX_DELIMITER + "person");
+    //TODO finish adding all the Cendari properties
 }

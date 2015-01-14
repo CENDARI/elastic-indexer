@@ -2,6 +2,8 @@ package fr.inria.aviz.elasticindexer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
@@ -51,7 +53,8 @@ import fr.inria.aviz.elasticindexer.tika.CendariProperties;
  * Indexer is a Facade to elasticsearch for indexing documents.
  */
 public class Indexer {
-    private static Logger logger = Logger.getLogger(Indexer.class.getName());
+    private static final Logger logger = Logger.getLogger(Indexer.class.getName());
+    private static final String GOOGLE_API = "https://maps.googleapis.com/maps/api/geocode/json";
     private static Indexer instance_;
     private final Tika tika = new Tika();
     private final Properties props = new Properties();
@@ -59,6 +62,7 @@ public class Indexer {
     private Node node = null;
     private boolean esChecked;
     private ObjectMapper mapper = new ObjectMapper();
+    private String googleKey = null; 
     
     /** Resource name for the main index */
     public static final String ES_INDEX = "elasticindexer.elasticsearch.index";
@@ -472,8 +476,57 @@ public class Indexer {
         }
         if (metadata.get(TikaCoreProperties.DESCRIPTION) != null)
             info.put("description", metadata.get(TikaCoreProperties.DESCRIPTION));
+        if (metadata.get(CendariProperties.PERSON) != null)
+            info.setPersonName(metadata.getValues(CendariProperties.PERSON));
+        if (metadata.get(CendariProperties.PLACE) != null) {
+            String[] names = metadata.getValues(CendariProperties.PLACE);
+            info.setPlaceName(names);
+            Place[] places = info.getPlace();
+            for (Place p : places) {
+                String loc = resolvePlace(p.name);
+                if (loc != null)
+                    p.location = loc;
+            }
+        }
         return info;
     }
 
-};
+    /**
+     * Resolve a place name into a LAT,lON string
+     * @param name a place name
+     * @return a LAT,LON string or null
+     */
+    public String resolvePlace(String name) {
+        if (googleKey == null) return null;
+        try {
+            URL api = new URL(GOOGLE_API+"?address="+URLEncoder.encode(name,"utf-8")+"&key="+googleKey);
+            JsonNode root = mapper.readTree(api);
+            JsonNode locNode = root
+                    .path("results")
+                    .path(0)
+                    .path("geometry")
+                    .path("location");
+            String loc = locNode.get("lat")+", "+locNode.get("lng");
+            return loc;
+        }
+        catch(Exception e) {
+        }
+        return null;
+    }
+    
+    /**
+     * @return the googleKey
+     */
+    public String getGoogleKey() {
+        return googleKey;
+    }
+    
+    /**
+     * @param googleKey the googleKey to set
+     */
+    public void setGoogleKey(String googleKey) {
+        this.googleKey = googleKey;
+    }
+}
+
 

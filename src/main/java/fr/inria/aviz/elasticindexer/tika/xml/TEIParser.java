@@ -37,7 +37,8 @@ public class TEIParser extends AbstractXMLParser {
         return SUPPORTED_TYPES;
     }
     
-    private static ContentHandler getTEIHandler(
+    //TODO package private, change to public
+    static ContentHandler getTEIHandler(
             Metadata metadata, Property property, String element, 
             String ...context) {
         return new ContextualElementMetadataHandler(
@@ -61,13 +62,16 @@ public class TEIParser extends AbstractXMLParser {
                         "title", "titleStmt"),
                 getTEIHandler(metadata, TikaCoreProperties.KEYWORDS, 
                         "term", "keywords"),
-                //getTEIHandler(metadata, TikaCoreProperties.CREATOR, "creator"),
                 getTEIHandler(metadata, TikaCoreProperties.DESCRIPTION, 
                         "description"),
                 getTEIHandler(metadata, TikaCoreProperties.PUBLISHER, 
                         "publisher"),
                 getTEIHandler(metadata, TikaCoreProperties.CONTRIBUTOR, 
                         "name", "titleStmt", "respStmt"),
+                getTEIHandler(metadata, CendariProperties.PLACE, 
+                        "placeName"),
+                getTEIHandler(metadata, CendariProperties.PERSON, 
+                        "persName"),
                 //getTEIHandler(metadata, TikaCoreProperties.CREATED, "date"),
                 //getTEIHandler(metadata, TikaCoreProperties.TYPE, "type"),
                 //getTEIHandler(metadata, TikaCoreProperties.FORMAT, "format"),
