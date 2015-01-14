@@ -43,6 +43,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.inria.aviz.elasticindexer.tika.CendariProperties;
+
 /**
  * Singleton class, indexes documents.
  * 
@@ -412,6 +414,7 @@ public class Indexer {
      */
     public DocumentInfo parseDocument(String name, String contentType, InputStream content, int maxLength) {
         Metadata metadata = new Metadata();
+
         if (name != null) {
             metadata.add(Metadata.RESOURCE_NAME_KEY, name);
         }
@@ -448,8 +451,12 @@ public class Indexer {
             info.addDate(metadata.get("Creation-date"));
         if (metadata.get(TikaCoreProperties.MODIFIED) != null)
             info.addDate(metadata.get(TikaCoreProperties.MODIFIED));
+        if (metadata.get(TikaCoreProperties.CONTRIBUTOR) != null)
+            info.setContributorName(metadata.getValues(TikaCoreProperties.CONTRIBUTOR));
 
-        if (metadata.get(TikaCoreProperties.LANGUAGE) != null)
+        if (metadata.get(CendariProperties.LANG) != null)
+            info.setLanguage(metadata.getValues(CendariProperties.LANG));
+        else if (metadata.get(TikaCoreProperties.LANGUAGE) != null)
             info.setLanguage(metadata.get(TikaCoreProperties.LANGUAGE));
         else {
             LanguageIdentifier langIdent = new LanguageIdentifier(parsedContent);

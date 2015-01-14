@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mime-info>
-	<mime-type type="application/ead+xml">
-		<root-XML localName="ead"/>
-        <glob pattern="*.ead.xml"/>
+  <mime-type type="application/ead+xml">
+    <root-XML localName="ead"/>
+    <sub-class-of type="application/xml"/>
+    <glob pattern="*.ead.xml"/>
    </mime-type>
-	<mime-type type="application/eag+xml">
-		<root-XML localName="eag"/>
-        <glob pattern="*.eag.xml"/>
+   <mime-type type="application/eag+xml">
+     <sub-class-of type="application/xml"/>
+     <root-XML localName="eag"/>
+     <sub-class-of type="application/xml"/>
+     <glob pattern="*.eag.xml"/>
    </mime-type>
    <mime-type type="application/eac+xml">
-   		<root-XML localName="eac"/>
-        <glob pattern="*.eac.xml"/>
+     <root-XML localName="eac"/>
+     <sub-class-of type="application/xml"/>
+     <glob pattern="*.eac.xml"/>
    </mime-type>   
    <mime-type type="application/tei+xml">
-   		<root-XML localName="TEI" namespaceURI="http://www.tei-c.org/ns/1.0"/>
-          <glob pattern="*.tei"/>
+     <root-XML localName="TEI" namespaceURI="http://www.tei-c.org/ns/1.0"/>
+     <sub-class-of type="application/xml"/>
+     <acronym>TEI/XML</acronym>
+     <glob pattern="*.tei"/>
    </mime-type>   
 </mime-info>

@@ -1,11 +1,8 @@
-package fr.inria.aviz.elasticindexer.tika;
+package fr.inria.aviz.elasticindexer.tika.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Iterator;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.CloseShieldInputStream;
@@ -16,32 +13,18 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.EmbeddedContentHandler;
 import org.apache.tika.sax.OfflineContentHandler;
 import org.apache.tika.sax.TaggedContentHandler;
-import org.apache.tika.sax.TextContentHandler;
 import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
- * Class KnownXMLParser
+ * Class AbstractXMLParser
  * 
  * @author Jean-Daniel Fekete
- * @version $Revision$
  */
-public class KnownXMLParser extends AbstractParser {
-    private static final Set<MediaType> SUPPORTED_TYPES = 
-            Collections.unmodifiableSet(new HashSet<MediaType>(Arrays.asList(
-                    MediaType.application("ead+xml"),
-                    MediaType.application("eag+xml"),
-                    MediaType.application("eac+xml"),
-                    MediaType.application("tei+xml"))));
+public abstract class AbstractXMLParser extends AbstractParser {
+    protected static final String NAMESPACE_URI_XML = "http://www.w3.org/XML/1998/namespace";
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<MediaType> getSupportedTypes(ParseContext context) {
-        return SUPPORTED_TYPES;
-    }
     
     /**
      * {@inheritDoc}
@@ -52,7 +35,8 @@ public class KnownXMLParser extends AbstractParser {
             Metadata metadata, ParseContext context)
             throws IOException, SAXException, TikaException {
         if (metadata.get(Metadata.CONTENT_TYPE) == null) {
-            metadata.set(Metadata.CONTENT_TYPE, "application/xml");
+            Iterator<MediaType> iter = getSupportedTypes(context).iterator();
+            metadata.set(Metadata.CONTENT_TYPE, iter.next().getType());
         }
 
         final XHTMLContentHandler xhtml =
@@ -74,9 +58,11 @@ public class KnownXMLParser extends AbstractParser {
             xhtml.endDocument();
         }
     }
+    
+    protected abstract ContentHandler getContentHandler(
+            ContentHandler handler, 
+            Metadata metadata, 
+            ParseContext context);
 
-    protected ContentHandler getContentHandler(
-            ContentHandler handler, Metadata metadata, ParseContext context) {
-        return new TextContentHandler(handler, true);
-    }
+
 }
