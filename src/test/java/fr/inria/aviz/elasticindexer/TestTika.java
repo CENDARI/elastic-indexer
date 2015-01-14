@@ -15,11 +15,11 @@ public class TestTika extends TestCase {
 
     static final String[] fileName = {
         "/data/frlacinemathequedetoulouse.eag.xml",
-//        "/data/library-of-castle-mikulov_draft;ead.xml",
-//        "/data/B360446201_B343_2_tei.xml",
-//        "/data/package.json",
-//        "/data/D9.1.docx",
-//        "/data/D9.1.pdf",
+        "/data/library-of-castle-mikulov_draft;ead.xml",
+        "/data/B360446201_B343_2_tei.xml",
+        "/data/package.json",
+        "/data/D9.1.docx",
+        "/data/D9.1.pdf",
     };
 
     /**
@@ -37,6 +37,9 @@ public class TestTika extends TestCase {
             try {
                 content = IOUtils.toByteArray(getClass().getResource(name));
                 DocumentInfo info = indexer.parseDocument(name, null, content, -1);
+                String text = info.getText();
+                if (text.length() > 100)
+                    info.setText(text.substring(0, 100));
                 System.out.println(indexer.toJSON(info));
                 //indexer.indexDocument(info);
             }
