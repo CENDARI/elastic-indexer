@@ -15,16 +15,16 @@ import org.xml.sax.ContentHandler;
 import fr.inria.aviz.elasticindexer.tika.CendariProperties;
 
 /**
- * Class EADParser
+ * Class EAGParser
  * 
  * @author Jean-Daniel Fekete
  * @version $Revision$
  */
-public class EADParser extends AbstractXMLParser {
-    private static final String NAMESPACE_URI_EAD = "";
+public class EAGParser extends AbstractXMLParser {
+private static final String NAMESPACE_URI_EAG = "http://www.ministryculture.es/";
     
     private static final Set<MediaType> SUPPORTED_TYPES =
-            Collections.singleton(MediaType.application("ead+xml"));
+            Collections.singleton(MediaType.application("eag+xml"));
     
     /**
      * {@inheritDoc}
@@ -34,11 +34,11 @@ public class EADParser extends AbstractXMLParser {
         return SUPPORTED_TYPES;
     }
     
-    private static ContentHandler getEADHandler(
+    private static ContentHandler getEAGHandler(
             Metadata metadata, Property property, String element, 
             String ...context) {
         return new ContextualElementMetadataHandler(
-                NAMESPACE_URI_EAD, element,
+                NAMESPACE_URI_EAG, element,
                 metadata, property, context);
     }
 
@@ -47,27 +47,28 @@ public class EADParser extends AbstractXMLParser {
         ContentHandler defaultContentHandler = new TextContentHandler(handler, true);
         return new TeeContentHandler(
                 defaultContentHandler,
-                getEADHandler(metadata, TikaCoreProperties.TITLE, 
-                        "titleproper", "titlestmt"),
+                getEAGHandler(metadata, TikaCoreProperties.TITLE, 
+                        "autform", "identity"),
                 //TODO check the specific EAD elements
-                getEADHandler(metadata, TikaCoreProperties.KEYWORDS, 
-                        "term", "keywords"),
+                getEAGHandler(metadata, TikaCoreProperties.KEYWORDS, 
+                        "subject", "controlaccess"),
                 //getTEIHandler(metadata, TikaCoreProperties.CREATOR, "creator"),
-                getEADHandler(metadata, TikaCoreProperties.DESCRIPTION, 
+                getEAGHandler(metadata, TikaCoreProperties.DESCRIPTION, 
                         "description"),
                 //getEADHandler(metadata, TikaCoreProperties.PUBLISHER, "publisher"),
-                getEADHandler(metadata, TikaCoreProperties.CONTRIBUTOR, 
-                        "name", "titleStmt", "respStmt"),
+                 new ContextualElementMetadataHandler(
+                                TEIParser.NAMESPACE_URI_TEI, 
+                                "persName",
+                                metadata, 
+                                TikaCoreProperties.CONTRIBUTOR,
+                                "respevent", "person"),                        
                 //getEADHandler(metadata, TikaCoreProperties.CREATED, "date"),
                 //getEADHandler(metadata, TikaCoreProperties.TYPE, "type"),
                 //getEADHandler(metadata, TikaCoreProperties.FORMAT, "format"),
-                //getEADHandler(metadata, TikaCoreProperties.IDENTIFIER, "identifier"),
-                getEADHandler(metadata, TikaCoreProperties.RIGHTS, "licence"),
+                getEAGHandler(metadata, TikaCoreProperties.IDENTIFIER, "repositoryid"),
+                getEAGHandler(metadata, TikaCoreProperties.RIGHTS, "licence"),
                 new AttributeMetadataHandler(NAMESPACE_URI_XML, "lang", metadata, 
-                        CendariProperties.LANG),
-                new AttributeMetadataHandler(NAMESPACE_URI_EAD, "langcode", metadata, 
                         CendariProperties.LANG)
         );
     }
-
 }

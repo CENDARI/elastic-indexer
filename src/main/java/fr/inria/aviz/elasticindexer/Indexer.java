@@ -442,15 +442,15 @@ public class Indexer {
         if (metadata.get(TikaCoreProperties.CREATOR_TOOL) != null)
             info.setApplication(metadata.get(TikaCoreProperties.CREATOR_TOOL));
         if (metadata.get(TikaCoreProperties.KEYWORDS) != null)
-            info.setTag(metadata.get(TikaCoreProperties.KEYWORDS));
+            info.setTag(metadata.getValues(TikaCoreProperties.KEYWORDS));
         if (metadata.get("Application-Name") != null)
             info.setApplication(metadata.get(metadata.get("Application-Name")));
         if (metadata.get(TikaCoreProperties.PUBLISHER) != null)
-            info.setPublisher(metadata.get(TikaCoreProperties.PUBLISHER));
+            info.setPublisher(metadata.getValues(TikaCoreProperties.PUBLISHER));
         if (metadata.get("Creation-date") != null)
             info.addDate(metadata.get("Creation-date"));
         if (metadata.get(TikaCoreProperties.MODIFIED) != null)
-            info.addDate(metadata.get(TikaCoreProperties.MODIFIED));
+            info.addDate(metadata.getValues(TikaCoreProperties.MODIFIED));
         if (metadata.get(TikaCoreProperties.CONTRIBUTOR) != null)
             info.setContributorName(metadata.getValues(TikaCoreProperties.CONTRIBUTOR));
 

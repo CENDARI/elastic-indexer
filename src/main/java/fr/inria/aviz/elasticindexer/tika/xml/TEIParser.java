@@ -21,7 +21,10 @@ import fr.inria.aviz.elasticindexer.tika.CendariProperties;
  * @version $Revision$
  */
 public class TEIParser extends AbstractXMLParser {
-    private static final String NAMESPACE_URI_TEI = "http://www.tei-c.org/ns/1.0";
+    /**
+     * TEI namespace
+     */
+    public static final String NAMESPACE_URI_TEI = "http://www.tei-c.org/ns/1.0";
     
     private static final Set<MediaType> SUPPORTED_TYPES =
             Collections.singleton(MediaType.application("tei+xml"));
