@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href= "http://134.76.20.210/schemas/eag/trunk/rnc/EAG-schema.rnc" type="application/relax-ng-compact-syntax"?>
+<eag xmlns="http://www.ministryculture.es/">
+  <eagheader countryencoding="iso3166-1" langencoding="iso639-1" scriptencoding="iso15924" dateencoding="iso8601" status="draft">
+    <eagid xmlns="">cndr_fMll51NO</eagid>
+    <mainhist>
+      <mainevent maintype="create">
+        <date normal="2013-04-03"/>
+        <respevent>
+          <person xmlns="http://www.tei-c.org/ns/1.0">
+            <persName>
+              <forename>Anna</forename>
+              <surname>Bohn</surname>
+            </persName>
+            <affiliation>
+              <orgName type="institution">FUB</orgName>
+            </affiliation>
+          </person>
+        </respevent>
+        <source xml:id="source1">http://www.lacinemathequedetoulouse.com/</source>
+      </mainevent>
+    </mainhist>
+  </eagheader>
+  <archguide>
+    <identity>
+      <autform xml:lang="fr">La Cinémathèque de Toulouse</autform>
+    </identity>
+    <desc>
+      <location>
+        <country>France</country>
+        <postalcode>31080</postalcode>
+        <municipality>Toulouse</municipality>
+        <street>69 rue du Taur</street>
+      </location>
+      <email href="contact@lacinemathequedetoulouse.com">contact@lacinemathequedetoulouse.com</email>
+      <webpage href="http://www.lacinemathequedetoulouse.com/">http://www.lacinemathequedetoulouse.com/</webpage>
+      <fax>+33 5 62 30 30 12</fax>
+      <telephone>+33 5 62 30 30 10</telephone>
+      <repositorhist xml:lang="" source="#source1">
+        <p>L’association</p>
+        <p>Fondée en 1964 par des cinéphiles passionnés réunis autour de Raymond Borde, membre de la Fédération Internationale des Archives du Film (FIAF) depuis 1965 et actuellement présidée par Martine Offroy, la Cinémathèque de Toulouse est l’une des trois principales archives cinématographiques françaises. Soutenue par le Centre national du cinéma et de l’image animée (CNC), la Ville de Toulouse, le Conseil Général de la Haute-Garonne et le Conseil Régional de Midi-Pyrénées, elle mène une politique de restauration active et de valorisation du patrimoine cinématographique en direction d’un large public.</p>
+      </repositorhist>
+      <holdings xml:lang="fr" source="#source1">
+        <p>Collections</p>
+        <p>38 000 copies, 71 000 dossiers de presse, 70 000 affiches, 15 000 ouvrages sur le cinéma…</p>
+        <p>Les collections conservées par La Cinémathèque de Toulouse sont considérées comme l’un des principaux fonds européens. Depuis 50 ans, les liens profonds de travail et d’amitié avec les plus grandes archives internationales ont favorisé les dons, les dépôts, les échanges et les restaurations en commun.</p>
+        <p>Toulouse est, avec Paris, la seule cinémathèque de France reconnue d’intérêt national par le ministère de la Culture. Elle est l’un des quatre membres français de la FIAF, aux côtés des Archives françaises du film, de la Cinémathèque française et de l’ECPAD. Cela lui donne des moyens pour faire des découvertes dans ses propres collections et pour poursuivre l’entreprise de catalogage affiné de ses copies. Il faut y associer la conservation de la collection « non-film », autrement dit les supports associés : affiches, photos, documents sonores, etc.</p>
+      </holdings>
+      <repositorguides>
+        <repositorguide href="http://www.cineressources.net/recherche_t.php">Ciné-Ressources</repositorguide>
+      </repositorguides>
+      <access question="yes"/>
+      <controlaccess>
+        <controlaccess>
+          <head>Typology</head>
+          <subject>audio-visual</subject>
+        </controlaccess>
+        <controlaccess>
+          <head>Theme</head>
+          <subject>WW1</subject>
+        </controlaccess>
+      </controlaccess>
+    </desc>
+  </archguide>
+</eag>
