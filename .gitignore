@@ -15,7 +15,7 @@ hs_err_pid*
 .project
 .pydevproject
 .settings/
-data/
+/data/
 *~
 /target/
 cendari_resources.json.gz
