@@ -22,6 +22,9 @@ import org.junit.Test;
  * @version $Revision$
  */
 public class TestCendariAPI extends TestCase {
+    /**
+     * Big test, only started when a key is specified using -Dkey='...'
+     */
     @Test
     public void test() {
         Indexer indexer = Indexer.instance();
