@@ -19,3 +19,5 @@ data/
 *~
 /target/
 cendari_resources.json.gz
+cendari.py
+cendari.dump
