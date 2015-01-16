@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -18,6 +20,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
+
 
 
 /**
@@ -45,6 +50,8 @@ public class DocumentInfo extends HashMap<String , Object> {
 //    private String uri;
 //    private String[] groups_allowed;
 //    private String[] users_allowed;
+    private static final Logger logger = Logger.getLogger(DocumentInfo.class);
+    Parser dateParser = new Parser();
     /** Date printer for elasticsearch */
     @JsonIgnore
     public final static DateTimeFormatter DATE_PRINTER = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
@@ -152,10 +159,71 @@ public class DocumentInfo extends HashMap<String , Object> {
     public String[] getDate() {
         return (String[])this.get("date");
     }
+    
+    /**
+     * Check the date format and fix it or return null
+     * @param date a date format as string
+     * @return a correct date format or null
+     */
+    public String checkDate(String date) {
+        if (date == null || date.length() == 0)
+            return null;
+        try {
+            DATE_PRINTER.parseDateTime(date);
+            return date;
+        }
+        catch(IllegalArgumentException e) {
+            logger.debug("Illegal date format for elasticsearch: "+date);
+        }
+        List<DateGroup> groups = dateParser.parse(date);
+        for (DateGroup group : groups) {
+
+            List<Date> dates = group.getDates();
+            if (dates.size() > 1) {
+                logger.info("Ambiguous date: "+date+" with "+
+                            dates.size()+" interpretations");
+            }
+            String match = group.getText();
+            if (match.matches("^[0-9]{1,4}$"))
+                return match+"-01-01";
+            return DATE_PRINTER.print(new DateTime(dates.get(0)));
+        }
+        return null;
+    }
+    
+    /**
+     * Check date format and fix or set to null
+     * @param dates
+     * @return a table of dates
+     */
+    public String[] checkDates(String[] dates) {
+        int nullCnt = 0;
+        for (int i = 0; i < dates.length; i++) {
+            String d = checkDate(dates[i]);
+            if (d == null) {
+                nullCnt++;
+            }
+            dates[i] = d;
+        }
+        if (nullCnt!= 0) {
+            nullCnt = dates.length - nullCnt;
+            if (nullCnt == 0)
+                return null;
+            String[] ret = new String[nullCnt];
+            int j = 0;
+            for (int i = 0; i < dates.length; i++) {
+                if (dates[i] != null)
+                    ret[j++] = dates[i];
+            }
+            return ret;
+        }
+        return dates;
+    }
     /**
      * @param date the date to set
      */
     public void setDate(String... date) {
+        date = checkDates(date);
         this.put("date", date);
     }
     
