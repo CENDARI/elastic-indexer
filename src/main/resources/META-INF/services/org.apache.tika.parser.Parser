@@ -55,3 +55,4 @@ org.apache.tika.parser.mat.MatParser
 fr.inria.aviz.elasticindexer.tika.xml.TEIParser
 fr.inria.aviz.elasticindexer.tika.xml.EADParser
 fr.inria.aviz.elasticindexer.tika.xml.EAGParser
+fr.inria.aviz.elasticindexer.tika.xml.OAIPMH

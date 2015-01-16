@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="oai2.xsl"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+ <responseDate>2013-12-07T01:02:55Z</responseDate>
+ <request verb="GetRecord" identifier="oai:e-codices.unifr.ch:http://www.e-codices.unifr.ch/en/list/one/sbs/min0095" metadataPrefix="oai_dc">http://www.e-codices.unifr.ch/oai/oai.php</request>
+  <GetRecord>
+  <record>
+  <header>
+   <identifier>oai:e-codices.unifr.ch:http://www.e-codices.unifr.ch/en/list/one/sbs/min0095</identifier>
+   <datestamp>2013-10-01</datestamp>
+   <setSpec>sbs</setSpec>
+   </header>
+   <metadata>
+     <oai_dc:dc
+       xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+       xmlns:dc="http://purl.org/dc/elements/1.1/"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/
+       http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+      <dc:title>Schaffhausen, Ministerialbibliothek, Min. 95 : Missal (Gradual, Sacramentary, Lectionary)</dc:title>
+      <dc:description>Most parts of this missal, some of with neumes, were produced in about 1100. After 1200 they were bound together with a more recent addition. The characteristic initials with twining branches, the inclusion of the feast days of local saints in the calendar, the additional section, and other addenda indicate that the missal was produced in the monastery of Allerheiligen (All Saints) in Schaffhausen and remained in use there over the course of many centuries. It is one of the few liturgical manuscripts from this monastery that survived the Reformation. (spe)</dc:description>
+      <dc:publisher>e-codices - Virtual Manuscript Library of Switzerland</dc:publisher>
+      <dc:date>first half of the 12th century :: notBefore 1100 :: notAfter 1149</dc:date>
+      <dc:type>Manuscript</dc:type>
+      <dc:format>Parchment, 173 ff., 30.5 x 21.5 cm</dc:format>
+      <dc:identifier>doi:10.5076/e-codices-sbs-min0095</dc:identifier>
+      <dc:identifier>http://www.e-codices.unifr.ch/en/list/one/sbs/min0095</dc:identifier>
+      <dc:identifier>Schaffhausen, Ministerialbibliothek, Min. 95</dc:identifier>
+      <dc:source>http://www.e-codices.unifr.ch/en/list/one/sbs/min0095</dc:source>
+      <dc:language>lat</dc:language>
+      <dc:relation>Gamper Rudolf / Knoch-Mund Gaby / Stähli Marlis, Katalog der mittelalterlichen Handschriften der Ministerialbibliothek Schaffhausen, Dietikon-Zürich 1994, S. 215-217. (http://www.e-codices.unifr.ch/en/description/sbs/min0095)</dc:relation>
+      <dc:coverage>All Saints, Schaffhausen</dc:coverage>
+      <dc:rights>e-codices / Schaffhausen, Ministerialbibliothek (cf. http://www.e-codices.unifr.ch/en/info/terms)</dc:rights>
+      <dc:preview_page>http://www.e-codices.unifr.ch/manuscripts/e-codices/thumbs/sbs-min0095/sbs-min0095_005r.jpg</dc:preview_page>
+     </oai_dc:dc>
+   </metadata>
+  </record>
+ </GetRecord>
+</OAI-PMH>

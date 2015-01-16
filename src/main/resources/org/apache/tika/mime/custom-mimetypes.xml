@@ -22,4 +22,10 @@
      <acronym>TEI/XML</acronym>
      <glob pattern="*.tei"/>
    </mime-type>   
+   <mime-type type="application/oai-pmh+xml">
+     <root-XML localName="OAI-PMH" namespaceURI="http://www.openarchives.org/OAI/2.0/"/>
+     <sub-class-of type="application/xml"/>
+     <acronym>OAI-PMH/XML</acronym>
+     <glob pattern="*.oai"/>
+   </mime-type>   
 </mime-info>
