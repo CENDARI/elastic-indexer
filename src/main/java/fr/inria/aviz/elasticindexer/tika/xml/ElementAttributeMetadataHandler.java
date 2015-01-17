@@ -15,13 +15,24 @@ import org.xml.sax.SAXException;
 public class ElementAttributeMetadataHandler extends AttributeMetadataHandler {
     private String elemName;
     
+    /**
+     * Creates a Attribute handler for a specific attribute on a specific element
+     * @param uri the namespace
+     * @param localName the attribute name
+     * @param metadata the metadata to populate
+     * @param property the metadata propery to populate
+     * @param elemName the element name to match in the same namespace
+     */
     public ElementAttributeMetadataHandler(
             String uri, String localName, Metadata metadata,
             Property property, String elemName) {
         super(uri, localName, metadata, property);
         this.elemName = elemName;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void startElement(
             String uri, String localName, String qName, Attributes attributes)
