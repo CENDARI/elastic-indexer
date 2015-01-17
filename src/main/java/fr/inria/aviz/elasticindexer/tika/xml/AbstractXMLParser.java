@@ -32,7 +32,25 @@ import org.xml.sax.SAXException;
 public abstract class AbstractXMLParser extends AbstractParser {
     protected static final String NAMESPACE_URI_XML = "http://www.w3.org/XML/1998/namespace";
     
-    protected URL transformer;
+    protected Transformer transformer;
+    
+    /**
+     * Find XSLT transformer if the resource exists. 
+     */
+    public AbstractXMLParser() {
+        Class me = this.getClass();
+        String name = me.getSimpleName();
+        URL url = me.getResource(name+".xsl");
+        if (url != null) try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            
+            Source xsl = new StreamSource(url.openStream(),name);
+            transformer = factory.newTransformer(xsl);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     /**
      * {@inheritDoc}
@@ -60,11 +78,6 @@ public abstract class AbstractXMLParser extends AbstractParser {
                             getContentHandler(tagged, metadata, context)));
             
             if (transformer != null) {
-                TransformerFactory factory = TransformerFactory.newInstance();
-                
-                Source xsl = new StreamSource(transformer.openStream(),transformer.toString());
-                Transformer transformer = factory.newTransformer(xsl);
-                
                 transformer.transform(
                         new StreamSource(in), 
                         new SAXResult(out));
