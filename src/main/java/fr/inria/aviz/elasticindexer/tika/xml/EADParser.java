@@ -58,6 +58,16 @@ public class EADParser extends AbstractXMLParser {
                 //getEADHandler(metadata, TikaCoreProperties.PUBLISHER, "publisher"),
                 getEADHandler(metadata, TikaCoreProperties.CONTRIBUTOR, 
                         "name", "titleStmt", "respStmt"),
+                //getEADHandler(metadata, CendariProperties.DATE, "date"),
+                new ElementAttributeMetadataHandler(
+                        NAMESPACE_URI_EAD, "normal",
+                            metadata, CendariProperties.DATE, "unitdate") {
+                    protected void addMetadata(String date) {
+                        String[] dates = date.split("/");
+                        for (String d : dates) 
+                            super.addMetadata(d);
+                    };
+                },
                 //getEADHandler(metadata, TikaCoreProperties.CREATED, "date"),
                 //getEADHandler(metadata, TikaCoreProperties.TYPE, "type"),
                 //getEADHandler(metadata, TikaCoreProperties.FORMAT, "format"),

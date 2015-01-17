@@ -37,5 +37,12 @@ public class CendariProperties {
      */
     public static final Property PERSON = Property.internalTextBag(
             PREFIX_CENDARI + Metadata.NAMESPACE_PREFIX_DELIMITER + "person");
+    
+    /**
+     * 
+     */
+    public static final Property DATE = Property.internalTextBag(
+            PREFIX_CENDARI + Metadata.NAMESPACE_PREFIX_DELIMITER + "date");
+    
     //TODO finish adding all the Cendari properties
 }

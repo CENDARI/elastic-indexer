@@ -72,6 +72,11 @@ public class TEIParser extends AbstractXMLParser {
                         "placeName"),
                 getTEIHandler(metadata, CendariProperties.PERSON, 
                         "persName"),
+                //getTEIHandler(metadata, CendariProperties.DATE, "date"),
+                new ElementAttributeMetadataHandler(
+                        NAMESPACE_URI_TEI, "when",
+                        metadata, CendariProperties.DATE, "date"),                                
+                        
                 //getTEIHandler(metadata, TikaCoreProperties.CREATED, "date"),
                 //getTEIHandler(metadata, TikaCoreProperties.TYPE, "type"),
                 //getTEIHandler(metadata, TikaCoreProperties.FORMAT, "format"),

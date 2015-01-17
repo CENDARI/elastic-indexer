@@ -6,22 +6,17 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
+
+import fr.inria.aviz.elasticindexer.utils.DateParser;
 
 
 
@@ -50,11 +45,6 @@ public class DocumentInfo extends HashMap<String , Object> {
 //    private String uri;
 //    private String[] groups_allowed;
 //    private String[] users_allowed;
-    private static final Logger logger = Logger.getLogger(DocumentInfo.class);
-    Parser dateParser = new Parser();
-    /** Date printer for elasticsearch */
-    @JsonIgnore
-    public final static DateTimeFormatter DATE_PRINTER = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
     /** All the field names */
     @JsonIgnore
     public final static String[] FIELDS = {
@@ -160,36 +150,6 @@ public class DocumentInfo extends HashMap<String , Object> {
         return (String[])this.get("date");
     }
     
-    /**
-     * Check the date format and fix it or return null
-     * @param date a date format as string
-     * @return a correct date format or null
-     */
-    public String checkDate(String date) {
-        if (date == null || date.length() == 0)
-            return null;
-        try {
-            DATE_PRINTER.parseDateTime(date);
-            return date;
-        }
-        catch(IllegalArgumentException e) {
-            logger.debug("Illegal date format for elasticsearch: "+date);
-        }
-        List<DateGroup> groups = dateParser.parse(date);
-        for (DateGroup group : groups) {
-
-            List<Date> dates = group.getDates();
-            if (dates.size() > 1) {
-                logger.info("Ambiguous date: "+date+" with "+
-                            dates.size()+" interpretations");
-            }
-            String match = group.getText();
-            if (match.matches("^[0-9]{1,4}$"))
-                return match+"-01-01";
-            return DATE_PRINTER.print(new DateTime(dates.get(0)));
-        }
-        return null;
-    }
     
     /**
      * Check date format and fix or set to null
@@ -199,7 +159,7 @@ public class DocumentInfo extends HashMap<String , Object> {
     public String[] checkDates(String[] dates) {
         int nullCnt = 0;
         for (int i = 0; i < dates.length; i++) {
-            String d = checkDate(dates[i]);
+            String d = DateParser.checkDate(dates[i]);
             if (d == null) {
                 nullCnt++;
             }
@@ -232,18 +192,17 @@ public class DocumentInfo extends HashMap<String , Object> {
      * @param date
      */
     public void addDate(String... date) {
-        String[] newdate;
-        if (this.get("date") != null) {
-            
+        if (this.get("date") == null) {
+            setDate(date);
+        }
+        else {   
             ArrayList<String> buf = new ArrayList<>(
                     Arrays.asList((String[])this.get("date")));
             buf.addAll(Arrays.asList(date));
-            newdate = new String[buf.size()];
+            String[] newdate = new String[buf.size()];
             buf.toArray(newdate);
+            setDate(newdate);
         }
-        else
-            newdate = date;
-        this.put("date", newdate);
     }
     
     /**
@@ -252,7 +211,7 @@ public class DocumentInfo extends HashMap<String , Object> {
     public void setDateJavaDate(Date... date) {
         String[] res = new String[date.length];
         for (int i = 0; i < date.length; i++) {
-            res[i] = DATE_PRINTER.print(new DateTime(date[i]));
+            res[i] = DateParser.format(date[i]);
         }
         setDate(res);
     }
@@ -263,7 +222,7 @@ public class DocumentInfo extends HashMap<String , Object> {
     public void setDateJodaDate(DateTime... date) {
         String[] res = new String[date.length];
         for (int i = 0; i < date.length; i++) {
-            res[i] = DATE_PRINTER.print(date[i]);
+            res[i] = DateParser.format(date[i]);
         }
         setDate(res);
     }

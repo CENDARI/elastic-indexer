@@ -439,6 +439,8 @@ public class Indexer {
         info.setFormat(metadata.get(Metadata.CONTENT_TYPE));
         if (metadata.get(TikaCoreProperties.CREATED) != null)
             info.setDate(metadata.get(TikaCoreProperties.CREATED));
+        if (metadata.get(CendariProperties.DATE) != null)
+            info.addDate(metadata.getValues(CendariProperties.DATE));
         if (metadata.get(TikaCoreProperties.TITLE) != null)
             info.setTitle(metadata.get(TikaCoreProperties.TITLE));
         if (metadata.get(TikaCoreProperties.CREATOR) != null)
