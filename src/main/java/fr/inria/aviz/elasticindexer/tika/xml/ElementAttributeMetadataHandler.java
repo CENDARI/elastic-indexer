@@ -5,6 +5,7 @@ import org.apache.tika.metadata.Property;
 import org.apache.tika.parser.xml.AttributeMetadataHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import fr.inria.aviz.elasticindexer.utils.TextCleaner;
 
 /**
  * Class ElementAttributeMetadataHandler
@@ -39,6 +40,15 @@ public class ElementAttributeMetadataHandler extends AttributeMetadataHandler {
             throws SAXException {
         if (localName.equals(this.elemName))
             super.startElement(uri, localName, qName, attributes);
+    }
+
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addMetadata(String value) {
+        super.addMetadata(TextCleaner.cleanup(value));
     }
 
 }

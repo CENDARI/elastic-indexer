@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -98,6 +99,4 @@ public abstract class AbstractXMLParser extends AbstractParser {
             ContentHandler handler, 
             Metadata metadata, 
             ParseContext context);
-
-
 }

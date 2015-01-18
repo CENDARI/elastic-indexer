@@ -46,13 +46,6 @@ public class TEIParser extends AbstractXMLParser {
                 metadata, property, context);
     }
 
-//    private static ContentHandler getTEIAttrHandler(
-//            Metadata metadata, Property property, String attr) {
-//        return new AttributeMetadataHandler(
-//                NAMESPACE_URI_TEI, attr, metadata, property);
-//    }
-    
-
     protected ContentHandler getContentHandler(
             ContentHandler handler, Metadata metadata, ParseContext context) {
         ContentHandler defaultContentHandler = new TextContentHandler(handler, true);

@@ -1,13 +1,13 @@
 package fr.inria.aviz.elasticindexer.tika.xml;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Property;
 import org.apache.tika.parser.xml.ElementMetadataHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import fr.inria.aviz.elasticindexer.utils.TextCleaner;
 
 /**
  * Class ContextualElementMetadataHandler
@@ -18,7 +18,6 @@ import org.xml.sax.SAXException;
 public class ContextualElementMetadataHandler extends ElementMetadataHandler {
     private String[] context;
     private ArrayList<String> stack = new ArrayList<>();
-    private static final Pattern SPACES = Pattern.compile("\\s+"); 
 
     /**
      * @param uri
@@ -130,12 +129,6 @@ public class ContextualElementMetadataHandler extends ElementMetadataHandler {
      */
     @Override
     protected void addMetadata(String value) {
-        super.addMetadata(cleanup(value));
-    }
-
-    protected String cleanup(String value) {
-        value = value.trim();
-        value = SPACES.matcher(value).replaceAll(" "); 
-        return value;
+        super.addMetadata(TextCleaner.cleanup(value));
     }
 }

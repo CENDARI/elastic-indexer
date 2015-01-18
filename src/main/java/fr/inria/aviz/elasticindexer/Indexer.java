@@ -46,6 +46,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.inria.aviz.elasticindexer.tika.CendariProperties;
+import fr.inria.aviz.elasticindexer.utils.TextCleaner;
 
 /**
  * Singleton class, indexes documents.
@@ -434,6 +435,7 @@ public class Indexer {
             return null;
         }
         DocumentInfo info = new DocumentInfo();
+        parsedContent = TextCleaner.cleanup(parsedContent);
         info.setText(parsedContent);
         info.setUri(name);
         info.setFormat(metadata.get(Metadata.CONTENT_TYPE));
