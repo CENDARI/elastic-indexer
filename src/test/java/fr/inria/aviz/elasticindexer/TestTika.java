@@ -39,8 +39,8 @@ public class TestTika extends TestCase {
                 content = IOUtils.toByteArray(getClass().getResource(name));
                 DocumentInfo info = indexer.parseDocument(name, null, content, -1);
                 String text = info.getText();
-                if (text.length() > 100)
-                    info.setText(text.substring(0, 100));
+//                if (text.length() > 100)
+//                    info.setText(text.substring(0, 100));
                 System.out.println(indexer.toJSON(info));
                 //indexer.indexDocument(info);
             }

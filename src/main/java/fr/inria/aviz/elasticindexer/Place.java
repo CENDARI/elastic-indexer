@@ -1,9 +1,15 @@
 package fr.inria.aviz.elasticindexer;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import fr.inria.aviz.elasticindexer.utils.PlaceParser;
+
 
 /**
  * Description for a Place
  */
+@JsonInclude(Include.NON_NULL)
 public class Place {
     /** Full text name */
     public String name;
@@ -42,6 +48,19 @@ public class Place {
         Place p = (Place)that;
         return ((this.name == p.name) || (this.name != null && this.name.equals(p.name))) &&
                 ((this.location == p.location) || (this.location != null && this.location.equals(p.location)));
+    }
+    
+    /**
+     * Resolve the place location according to the place name
+     * @return the resolved place or null
+     */
+    public String resolve()  {
+        if (name == null) return null;
+        if (location != null) return location;
+        String loc = PlaceParser.resolvePlace(name);
+        if (loc != null)
+            location = loc;
+        return location;
     }
     
     /**

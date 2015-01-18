@@ -7,11 +7,12 @@
 
 	<xsl:output encoding="UTF-8" method="xml"/>
 	
-    <xsl:template match="tei:surname|tei:forename|tei:roleName|tei:addName|tei:genName">
+    <xsl:template match="tei:surname|tei:forename|tei:roleName|tei:addName|tei:genName|tei:date">
     	<xsl:text> </xsl:text>
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
+    	<xsl:text> </xsl:text>
     </xsl:template>
     
     <xsl:template match="tei:fw"/>

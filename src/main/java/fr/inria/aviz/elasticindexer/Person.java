@@ -1,9 +1,13 @@
 package fr.inria.aviz.elasticindexer;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * 
  * Description for a Person
  */
+@JsonInclude(Include.NON_NULL)
 public class Person {
     /** full text name */
     public String name;
