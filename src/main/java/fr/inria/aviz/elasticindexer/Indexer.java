@@ -480,6 +480,14 @@ public class Indexer {
             info.put("description", metadata.get(TikaCoreProperties.DESCRIPTION));
         if (metadata.get(CendariProperties.PERSON) != null)
             info.setPersonName(metadata.getValues(CendariProperties.PERSON));
+        if (metadata.get(CendariProperties.ORGANIZATION) != null)
+            info.setOrg(metadata.getValues(CendariProperties.ORGANIZATION));
+        if (metadata.get(CendariProperties.TAG) != null)
+            info.setTag(metadata.getValues(CendariProperties.TAG));
+        if (metadata.get(CendariProperties.REFERENCE) != null)
+            info.setRef(metadata.getValues(CendariProperties.REFERENCE));
+        if (metadata.get(CendariProperties.EVENT) != null)
+            info.setEvent(metadata.getValues(CendariProperties.EVENT));
         if (metadata.get(CendariProperties.PLACE) != null) {
             String[] names = metadata.getValues(CendariProperties.PLACE);
             info.setPlaceName(names);

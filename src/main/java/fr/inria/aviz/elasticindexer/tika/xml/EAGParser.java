@@ -64,6 +64,10 @@ private static final String NAMESPACE_URI_EAG = "http://www.ministryculture.es/"
                 getEAGHandler(metadata, CendariProperties.PLACE, "location", "desc"),
                 TEIParser.getTEIHandler(metadata, TikaCoreProperties.CONTRIBUTOR,
                         "persName", "respevent", "person"),
+                TEIParser.getTEIHandler(metadata, CendariProperties.ORGANIZATION, 
+                        "orgName"),
+                getEAGHandler(metadata, CendariProperties.ORGANIZATION, "autform"),
+                getEAGHandler(metadata, CendariProperties.REFERENCE, "source"),
                 new AttributeMetadataHandler(NAMESPACE_URI_XML, "lang", metadata, 
                         CendariProperties.LANG)
         );
