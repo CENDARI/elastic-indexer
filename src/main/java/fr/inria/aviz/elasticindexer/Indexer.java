@@ -489,10 +489,10 @@ public class Indexer {
         if (metadata.get(CendariProperties.PLACE) != null) {
             String[] names = metadata.getValues(CendariProperties.PLACE);
             info.setPlaceName(names);
-            Place[] places = info.getPlace();
-            for (Place p : places) {
-                p.resolve();
-            }
+//            Place[] places = info.getPlace();
+//            for (Place p : places) {
+//                p.resolve();
+//            }
         }
         return info;
     }
