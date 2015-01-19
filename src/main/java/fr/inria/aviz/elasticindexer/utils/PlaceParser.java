@@ -88,7 +88,7 @@ public class PlaceParser {
                             continue; // skip over non-elements
                         NodeList nodes = term.getChildNodes();
                         String fullname = null, 
-                                path = null,
+//                                path = null,
                                 lat = null, 
                                 lon = null;
                         for (int j = 0; j < nodes.getLength(); j++) {
@@ -97,8 +97,8 @@ public class PlaceParser {
                                 Element e = (Element)node;
                                 if (e.getLocalName().equals("name"))
                                     fullname = e.getTextContent();
-                                else if (e.getLocalName().equals("path"))
-                                    path = e.getTextContent();
+//                                else if (e.getLocalName().equals("path"))
+//                                    path = e.getTextContent();
                                 else if (e.getLocalName().equals("latitude"))
                                     lat =  e.getTextContent();
                                 else if (e.getLocalName().equals("longitude"))
