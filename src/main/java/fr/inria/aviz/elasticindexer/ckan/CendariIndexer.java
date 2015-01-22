@@ -81,15 +81,9 @@ public class CendariIndexer {
             case HttpURLConnection.HTTP_MOVED_PERM:
             case HttpURLConnection.HTTP_MOVED_TEMP:
             case HttpURLConnection.HTTP_SEE_OTHER:
-                String newUrl = http.getHeaderField("Location");
-                
-                // get the cookie if need, for login
-                String cookies = http.getHeaderField("Set-Cookie");
-         
-                // open the new connnection again
-                http = (HttpURLConnection) new URL(newUrl).openConnection();
-                http.setRequestProperty("Cookie", cookies);
-                break;
+                pack = http.getHeaderField("Location");
+                logger.info("Redirected to "+pack);
+                continue;
             case HttpURLConnection.HTTP_OK:
                 break;
             default:
