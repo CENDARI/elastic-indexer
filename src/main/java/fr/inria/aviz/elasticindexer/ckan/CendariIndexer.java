@@ -77,6 +77,25 @@ public class CendariIndexer {
             HttpURLConnection.setFollowRedirects(true);
             http.setInstanceFollowRedirects(true);
             http.setRequestProperty("Authorization", key);
+            switch (http.getResponseCode()) {
+            case HttpURLConnection.HTTP_MOVED_PERM:
+            case HttpURLConnection.HTTP_MOVED_TEMP:
+            case HttpURLConnection.HTTP_SEE_OTHER:
+                String newUrl = http.getHeaderField("Location");
+                
+                // get the cookie if need, for login
+                String cookies = http.getHeaderField("Set-Cookie");
+         
+                // open the new connnection again
+                http = (HttpURLConnection) new URL(newUrl).openConnection();
+                http.setRequestProperty("Cookie", cookies);
+                break;
+            case HttpURLConnection.HTTP_OK:
+                break;
+            default:
+                pack = null;
+                continue;
+            }
             
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(http.getInputStream()));
