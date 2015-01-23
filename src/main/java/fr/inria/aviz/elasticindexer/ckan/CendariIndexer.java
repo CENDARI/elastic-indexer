@@ -125,12 +125,22 @@ public class CendariIndexer {
         if (res == null) return null;
         
         byte[] contents = null;
-        try {
+        while (res != null) try {
             URL url = new URL(res);
-            URLConnection con = url.openConnection();
-            con.setRequestProperty("Authorization", key);
-            InputStream in = con.getInputStream();
-            contents = IOUtils.toByteArray(in);
+            HttpURLConnection http = (HttpURLConnection)url.openConnection();
+            HttpURLConnection.setFollowRedirects(true);
+            http.setInstanceFollowRedirects(true);
+            http.setRequestProperty("Authorization", key);
+            int status = http.getResponseCode();
+            String redirect = http.getHeaderField("Location");
+            if (redirect == null && status == HttpURLConnection.HTTP_OK) {
+                InputStream in = http.getInputStream();
+                contents = IOUtils.toByteArray(in);
+                break;
+            }
+            if (redirect != null)
+                res = redirect;
+            return null;
         }
         catch(Exception e) {
             logger.error("Getting data content", e);
