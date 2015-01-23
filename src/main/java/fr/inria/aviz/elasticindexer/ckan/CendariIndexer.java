@@ -138,8 +138,11 @@ public class CendariIndexer {
                 contents = IOUtils.toByteArray(in);
                 break;
             }
-            if (redirect != null)
+            if (redirect != null) {
+                logger.info("Redirecting to "+redirect);
                 res = redirect;
+            }
+            logger.error("Cannot access resource at "+res);
             return null;
         }
         catch(Exception e) {
