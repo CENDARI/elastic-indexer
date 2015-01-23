@@ -72,38 +72,35 @@ public class CendariIndexer {
         ResourceList resources = new ResourceList();
         while (pack != null) try {
             URL url = new URL(pack);
-            URLConnection con = url.openConnection();
-            HttpURLConnection http = (HttpURLConnection)con;
+            HttpURLConnection http = (HttpURLConnection)url.openConnection();
             HttpURLConnection.setFollowRedirects(true);
             http.setInstanceFollowRedirects(true);
             http.setRequestProperty("Authorization", key);
-            switch (http.getResponseCode()) {
-            case HttpURLConnection.HTTP_MOVED_PERM:
-            case HttpURLConnection.HTTP_MOVED_TEMP:
-            case HttpURLConnection.HTTP_SEE_OTHER:
+            int status = http.getResponseCode();
+            if (status == HttpURLConnection.HTTP_MOVED_PERM ||
+                status == HttpURLConnection.HTTP_MOVED_TEMP ||
+                status == HttpURLConnection.HTTP_SEE_OTHER) {
                 pack = http.getHeaderField("Location");
                 logger.info("Redirected to "+pack);
-                continue;
-            case HttpURLConnection.HTTP_OK:
-                break;
-            default:
-                pack = null;
-                continue;
             }
-            
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(http.getInputStream()));
-            Map<String,Object> res = mapper.readValue(in, Map.class);
-            in.close();
-            
-            if (res.get("data") != null) {
-                List<Object> list = (List<Object>)res.get("data");
-                for (Object o : list) {
-                    resources.add(new Resource((Map<String,Object>)o));
+            else if (status == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(http.getInputStream()));
+                Map<String,Object> res = mapper.readValue(in, Map.class);
+                in.close();
+                
+                if (res.get("data") != null) {
+                    List<Object> list = (List<Object>)res.get("data");
+                    for (Object o : list) {
+                        resources.add(new Resource((Map<String,Object>)o));
+                    }
                 }
-            }
-            if (res.get("nextPage") != null && "False".equals(res.get("end"))) {
-                pack = (String)res.get("nextPage");
+                if (res.get("nextPage") != null && "False".equals(res.get("end"))) {
+                    pack = (String)res.get("nextPage");
+                }
+                else {
+                    pack = null;
+                }
             }
             else {
                 pack = null;
