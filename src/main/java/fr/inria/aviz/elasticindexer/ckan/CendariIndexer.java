@@ -77,6 +77,9 @@ public class CendariIndexer {
             http.setInstanceFollowRedirects(true);
             http.setRequestProperty("Authorization", key);
             int status = http.getResponseCode();
+            String redirect = http.getHeaderField("Location");
+            if (redirect != null)
+                System.out.println("Redirected to "+redirect);
             if (status == HttpURLConnection.HTTP_MOVED_PERM ||
                 status == HttpURLConnection.HTTP_MOVED_TEMP ||
                 status == HttpURLConnection.HTTP_SEE_OTHER) {
