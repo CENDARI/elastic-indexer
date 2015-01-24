@@ -20,3 +20,16 @@ assert response.code == 200
 response_dict = json.loads(response.read())
 pprint.pprint(response_dict)
 
+
+url = response_dict['dataUrl']
+while url != None:
+    print "Reading url "+url
+    request = urllib2.Request(url)
+    request.add_header('Authorization', sys.argv[2])
+    response = urllib2.urlopen(request)
+    assert response.code == 200
+
+    # Use the json module to load CKAN's response into a dictionary.
+    response = response.read()
+    pprint.pprint(response)
+    url = None
