@@ -34,6 +34,7 @@ public class TestCendariAPI extends TestCase {
         if (key == null) return;
         CendariIndexer cendari = new CendariIndexer(location, key);
         List<Object> packages = cendari.getDataspaces();
+        System.out.println("Read "+packages.size()+" dataspaces");
         for (Object o: packages) {
             Map<String,Object> p = (Map<String,Object>)o;
             System.out.println("Package is:");
@@ -44,6 +45,7 @@ public class TestCendariAPI extends TestCase {
             }
 
             ResourceList res = cendari.getResourceList((String)p.get("resources"));
+            System.out.println("Read "+res.size()+" resources");
             for (Resource r : res)
                 try {
                     System.out.println(mapper.writeValueAsString(r));
