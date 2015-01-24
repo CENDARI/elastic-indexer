@@ -9,8 +9,11 @@ import sys
 #data_string = urllib.quote(json.dumps({'id': 'data-explorer'}))
 
 # Make the HTTP request.
-response = urllib2.urlopen('http://localhost:42042/'+sys.argv[0])
-request.add_header('Authorization', sys.argv[1])
+url = 'http://localhost:42042/v1/resources/'+sys.argv[1]
+print "Reading url "+url
+request = urllib2.Request(url)
+request.add_header('Authorization', sys.argv[2])
+response = urllib2.urlopen(request)
 assert response.code == 200
 
 # Use the json module to load CKAN's response into a dictionary.
