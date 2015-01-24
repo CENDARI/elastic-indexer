@@ -98,7 +98,7 @@ public class CendariIndexer {
                         resources.add(new Resource((Map<String,Object>)o));
                     }
                 }
-                if (res.get("nextPage") != null && "False".equals(res.get("end"))) {
+                if (res.get("nextPage") != null)) {
                     pack = (String)res.get("nextPage");
                 }
                 else {
