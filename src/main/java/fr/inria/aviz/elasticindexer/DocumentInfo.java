@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.inria.aviz.elasticindexer.utils.DateParser;
+import fr.inria.aviz.elasticindexer.utils.LangCleaner;
 
 
 
@@ -258,11 +259,41 @@ public class DocumentInfo extends HashMap<String , Object> {
     public String[] getLanguage() {
         return (String[])this.get("language");
     }
+    
+    /**
+     * Check language formats and fix or set to null
+     * @param langs the languages
+     * @return a table of valid languages
+     */
+    public String[] checkLanguages(String[] langs) {
+        int nullCnt = 0;
+        for (int i = 0; i < langs.length; i++) {
+            String d = LangCleaner.cleanLanguage(langs[i]);
+            if (d == null) {
+                nullCnt++;
+            }
+            langs[i] = d;
+        }
+        if (nullCnt!= 0) {
+            nullCnt = langs.length - nullCnt;
+            if (nullCnt == 0)
+                return null;
+            String[] ret = new String[nullCnt];
+            int j = 0;
+            for (int i = 0; i < langs.length; i++) {
+                if (langs[i] != null)
+                    ret[j++] = langs[i];
+            }
+            return ret;
+        }
+        return langs;
+    }
+    
     /**
      * @param language the language to set
      */
     public void setLanguage(String... language) {
-        this.put("language", language);
+        this.put("language", checkLanguages(language));
     }
     /**
      * @return the org
