@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import org.apache.tika.exception.TikaException;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 

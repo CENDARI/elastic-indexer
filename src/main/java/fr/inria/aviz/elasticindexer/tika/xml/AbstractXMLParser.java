@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
-import java.util.regex.Pattern;
 
+import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.CloseShieldInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -23,14 +24,18 @@ import org.apache.tika.sax.OfflineContentHandler;
 import org.apache.tika.sax.TaggedContentHandler;
 import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Class AbstractXMLParser
  * 
  * @author Jean-Daniel Fekete
  */
-public abstract class AbstractXMLParser extends AbstractParser {
+public abstract class AbstractXMLParser extends AbstractParser
+    implements ErrorHandler {
+    static final protected Logger logger = Logger.getLogger(AbstractXMLParser.class);
     protected static final String NAMESPACE_URI_XML = "http://www.w3.org/XML/1998/namespace";
     
     protected Transformer transformer;
@@ -84,7 +89,9 @@ public abstract class AbstractXMLParser extends AbstractParser {
                         new SAXResult(out));
             }
             else {
-                context.getSAXParser().parse(in, out);
+                SAXParser parser = context.getSAXParser();
+                parser.getXMLReader().setErrorHandler(this);
+                parser.parse(in, out);
             }
         } catch (Exception e) {
             tagged.throwIfCauseOf(e);
@@ -99,4 +106,28 @@ public abstract class AbstractXMLParser extends AbstractParser {
             ContentHandler handler, 
             Metadata metadata, 
             ParseContext context);
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void error(SAXParseException ex) throws SAXException {
+        logger.error("Error parsing document", ex);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void fatalError(SAXParseException ex) throws SAXException {
+        logger.error("Fatal error parsing document", ex);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void warning(SAXParseException ex) throws SAXException {
+        logger.warn("Warning parsing document", ex);
+    }
 }

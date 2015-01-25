@@ -14,6 +14,7 @@ import org.junit.Test;
 public class TestTika extends TestCase {
 
     static final String[] fileName = {
+//        "/data/errors/books-from-ww1-period-kept-by-state-library-of-berlin.ead.xml",
         "/data/oai-pmh.xml",
         "/data/frlacinemathequedetoulouse.eag.xml",
         "/data/library-of-castle-mikulov_draft;ead.xml",
@@ -38,10 +39,11 @@ public class TestTika extends TestCase {
             try {
                 content = IOUtils.toByteArray(getClass().getResource(name));
                 DocumentInfo info = indexer.parseDocument(name, null, content, -1);
-                String text = info.getText();
+//                String text = info.getText();
 //                if (text.length() > 100)
 //                    info.setText(text.substring(0, 100));
-                System.out.println(indexer.toJSON(info));
+                if (info != null)
+                    System.out.println(indexer.toJSON(info));
                 //indexer.indexDocument(info);
             }
             catch(IOException e) {
