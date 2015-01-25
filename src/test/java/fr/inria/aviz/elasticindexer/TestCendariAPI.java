@@ -1,11 +1,14 @@
 package fr.inria.aviz.elasticindexer;
 
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import org.apache.tika.exception.TikaException;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -46,10 +49,11 @@ public class TestCendariAPI extends TestCase {
 
             ResourceList res = cendari.getResourceList((String)p.get("resources"));
             System.out.println("Read "+res.size()+" resources");
+            byte[] content = null;
             for (Resource r : res)
                 try {
                     System.out.println(mapper.writeValueAsString(r));
-                    byte[] content = cendari.getData((String)r.get("dataUrl"));
+                    content = cendari.getData((String)r.get("dataUrl"));
                     if (content == null) {
                         System.out.println("Cannot get content of dataUrl "+(String)r.get("dataUrl"));
                         continue;
@@ -58,9 +62,17 @@ public class TestCendariAPI extends TestCase {
                     System.out.println(mapper.writeValueAsString(info));
                     info.setGroups_allowed((String)p.get("name"));
                     indexer.indexDocument(info);
-                    
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     e.printStackTrace();
+                    if (content != null) try {
+                        FileOutputStream out = new FileOutputStream((String)r.get("name"));
+                        out.write(content);
+                        out.close();
+                    }
+                    catch(Exception e2) {
+                        e2.printStackTrace();
+                    }
                 }
         }
     }
