@@ -2,7 +2,7 @@ package fr.inria.aviz.elasticindexer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -52,6 +52,7 @@ import fr.inria.aviz.elasticindexer.utils.TextCleaner;
  * Indexer is a Facade to elasticsearch for indexing documents.
  */
 public class Indexer {
+    private static final Charset UTF8 = Charset.forName("UTF-8"); 
     private static final Logger logger = Logger.getLogger(Indexer.class.getName());
     private static Indexer instance_;
     private final Tika tika = new Tika();
@@ -296,7 +297,7 @@ public class Indexer {
             ClassLoader classLoader = getClass().getClassLoader();
             mapping = IOUtils.toString(
                     classLoader.getResource("cendari_document_mapping.json"),
-                    StandardCharsets.UTF_8);
+                    UTF8);
         }
         catch(Exception e) {
             logger.error("Cannot get cendari mapping file", e);
@@ -426,8 +427,13 @@ public class Indexer {
         String parsedContent;
         try {
             parsedContent = tika.parseToString(content, metadata, maxLength);
-        } catch (IOException | TikaException e) {
+        }
+        catch (TikaException e) {
             logger.error("Tika parse exception for document "+name, e);
+            return null;
+        }
+        catch (Exception e) {
+            logger.error("Exception for document "+name, e);
             return null;
         }
         DocumentInfo info = new DocumentInfo();

@@ -71,7 +71,7 @@ public class DocumentInfo extends HashMap<String , Object> {
     };
     /** Set of fields */
     @JsonIgnore
-    public final static Set<String> FIELDS_SET = new HashSet<>(Arrays.asList(FIELDS));
+    public final static Set<String> FIELDS_SET = new HashSet<String>(Arrays.asList(FIELDS));
     
     /**
      * @return the application
@@ -197,7 +197,7 @@ public class DocumentInfo extends HashMap<String , Object> {
             setDate(date);
         }
         else {   
-            ArrayList<String> buf = new ArrayList<>(
+            ArrayList<String> buf = new ArrayList<String>(
                     Arrays.asList((String[])this.get("date")));
             buf.addAll(Arrays.asList(date));
             String[] newdate = new String[buf.size()];

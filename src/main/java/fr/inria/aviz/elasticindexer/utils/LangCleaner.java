@@ -16,7 +16,7 @@ import com.neovisionaries.i18n.LanguageCode;
 public class LangCleaner {
     private static Logger logger = Logger.getLogger(LangCleaner.class);
     
-    private static final HashMap<String, String> char2tochar3= new HashMap<>();
+    private static final HashMap<String, String> char2tochar3= new HashMap<String, String>();
     static {
         for (LanguageCode code : LanguageCode.values()) {
             String al2 = code.name(), al3 = code.getAlpha3().name();

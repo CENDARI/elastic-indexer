@@ -17,7 +17,7 @@ import fr.inria.aviz.elasticindexer.utils.TextCleaner;
  */
 public class ContextualElementMetadataHandler extends ElementMetadataHandler {
     private String[] context;
-    private ArrayList<String> stack = new ArrayList<>();
+    private ArrayList<String> stack = new ArrayList<String>();
 
     /**
      * @param uri
