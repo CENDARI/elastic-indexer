@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import fr.inria.aviz.elasticindexer.DocumentInfo;
 import fr.inria.aviz.elasticindexer.Indexer;
+import fr.inria.aviz.tikaextensions.TikaExtensions;
 
 /**
  * Class CendariIndex
@@ -157,6 +158,7 @@ public class CendariIndexer {
      */
     public static void main(String[] arguments) {
         Indexer indexer = Indexer.instance();
+        TikaExtensions tika = TikaExtensions.instance();
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         
@@ -189,7 +191,7 @@ public class CendariIndexer {
                         System.out.println("Cannot get content of dataUrl"+(String)r.get("dataUrl"));
                         continue;
                     }
-                    DocumentInfo info = indexer.parseDocument((String)r.get("name"), null, content, -1);
+                    DocumentInfo info = indexer.convertMetadata(tika.parseDocument((String)r.get("name"), null, content, -1));
                     System.out.println(mapper.writeValueAsString(info));
                     info.setGroups_allowed((String)p.get("name"));
                     indexer.indexDocument(info);

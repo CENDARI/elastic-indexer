@@ -7,8 +7,6 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.apache.tika.Tika;
-import org.apache.tika.exception.TikaException;
 import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
@@ -26,7 +24,6 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.common.io.stream.BytesStreamInput;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.FilterBuilder;
@@ -43,8 +40,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.inria.aviz.elasticindexer.tika.CendariProperties;
-import fr.inria.aviz.elasticindexer.utils.TextCleaner;
+import fr.inria.aviz.tikaextensions.tika.CendariProperties;
 
 /**
  * Singleton class, indexes documents.
@@ -55,7 +51,6 @@ public class Indexer {
     private static final Charset UTF8 = Charset.forName("UTF-8"); 
     private static final Logger logger = Logger.getLogger(Indexer.class.getName());
     private static Indexer instance_;
-    private final Tika tika = new Tika();
     private final Properties props = new Properties();
     private Client es;
     private Node node = null;
@@ -393,54 +388,19 @@ public class Indexer {
     }
 
     /**
-     * Parse a specified document using Tika and returns the related DocumentInfo. 
+     * Convert a Tika Metadata to a DocumentInfo
      * 
-     * @param name document name
-     * @param contentType document type or null if unknown
-     * @param content document as a byte array
-     * @param maxLength maximum length to parse or -1 to parse all
+     * @param metadata The Tika Metadata
      * @return a DocumentInfo structure filled with the right contents of null if tika has not been able to parse it.
      */
-    public DocumentInfo parseDocument(String name, String contentType, byte[] content, int maxLength) {
-        return parseDocument(name, contentType, new BytesStreamInput(content, false), maxLength);
-    }
-
-    /**
-     * Parse a specified document using Tika and returns the related DocumentInfo. 
-     * 
-     * @param name document name
-     * @param contentType document type or null if unknown
-     * @param content document stream, which will be closed at the end of the call
-     * @param maxLength maximum length to parse or -1 to parse all
-     * @return a DocumentInfo structure filled with the right contents of null if tika has not been able to parse it.
-     */
-    public DocumentInfo parseDocument(String name, String contentType, InputStream content, int maxLength) {
-        Metadata metadata = new Metadata();
-
-        if (name != null) {
-            metadata.add(Metadata.RESOURCE_NAME_KEY, name);
-        }
-        if (contentType != null) {
-            metadata.add(Metadata.CONTENT_TYPE, contentType);
-        }
-
-        String parsedContent;
-        try {
-            parsedContent = tika.parseToString(content, metadata, maxLength);
-        }
-        catch (TikaException e) {
-            logger.error("Tika parse exception for document "+name, e);
-            return null;
-        }
-        catch (Exception e) {
-            logger.error("Exception for document "+name, e);
-            return null;
-        }
+    public DocumentInfo convertMetadata(Metadata metadata) {
+        String name = metadata.get(Metadata.RESOURCE_NAME_KEY);
+        String contentType = metadata.get(Metadata.CONTENT_TYPE);
+        String parsedContent = metadata.get("text");
         DocumentInfo info = new DocumentInfo();
-        parsedContent = TextCleaner.cleanup(parsedContent);
         info.setText(parsedContent);
         info.setUri(name);
-        info.setFormat(metadata.get(Metadata.CONTENT_TYPE));
+        info.setFormat(contentType);
         if (metadata.get(TikaCoreProperties.CREATED) != null)
             info.setDate(metadata.get(TikaCoreProperties.CREATED));
         if (metadata.get(CendariProperties.DATE) != null)

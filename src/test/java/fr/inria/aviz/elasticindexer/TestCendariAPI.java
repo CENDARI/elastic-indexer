@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.inria.aviz.elasticindexer.ckan.CendariIndexer;
 import fr.inria.aviz.elasticindexer.ckan.Resource;
 import fr.inria.aviz.elasticindexer.ckan.ResourceList;
+import fr.inria.aviz.tikaextensions.TikaExtensions;
 
 /**
  * Class TestCendariAPI
@@ -28,6 +29,7 @@ public class TestCendariAPI extends TestCase {
     public void test() {
         Indexer indexer = Indexer.instance();
         ObjectMapper mapper = new ObjectMapper();
+        TikaExtensions tika = TikaExtensions.instance();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         
         String location = "http://localhost:42042/";
@@ -56,7 +58,7 @@ public class TestCendariAPI extends TestCase {
                         System.out.println("Cannot get content of dataUrl "+(String)r.get("dataUrl"));
                         continue;
                     }
-                    DocumentInfo info = indexer.parseDocument((String)r.get("name"), null, content, -1);
+                    DocumentInfo info = indexer.convertMetadata(tika.parseDocument((String)r.get("name"), null, content, -1));
                     System.out.println(mapper.writeValueAsString(info));
                     info.setGroups_allowed((String)p.get("name"));
                     indexer.indexDocument(info);
