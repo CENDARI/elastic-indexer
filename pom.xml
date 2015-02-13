@@ -21,6 +21,14 @@
         <url>http://github.com/CENDARI/elastic-indexer</url>
       <tag>HEAD</tag>
   </scm>
+
+  <repositories>
+    <repository>
+      <id>dariah-repo</id>
+      <name>Dariah nexus repository</name>
+      <url>http://dev.dariah.eu/nexus/</url>
+    </repository>
+  </repositories>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,7 +59,7 @@
         <dependency>
         	<groupId>fr.inria.aviz.cendari</groupId>
         	<artifactId>tika-extensions</artifactId>
-        	<version>0.0.2</version>
+        	<version>0.0.3-SNAPSHOT</version>
         </dependency>
   </dependencies>
 
