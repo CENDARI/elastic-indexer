@@ -103,6 +103,7 @@ public class Indexer {
             catch(NumberFormatException e) {
                 logger.error("Invalid port number for "+ES_PORT1+": "+port1, e);
             }
+	    logger.debug("Connecting to elasticsearch with the following properties: port="+port+",host="+host1+", cluster="+cluster);
             TransportClient tes = new TransportClient(ImmutableSettings.settingsBuilder()
                     .put("cluster.name", cluster)
                     .build());
@@ -120,10 +121,12 @@ public class Indexer {
                     logger.error("Invalid port number for "+ES_PORT2+": "+port2, e);
                 }
                 tes.addTransportAddress(new InetSocketTransportAddress(host2, port));
+		logger.debug("Adding host "+host2+" to elasticsearch");
             }
             es = tes;
         }
         else {
+	    logger.debug("Connecting to elasticsearch with default properties");
             node = NodeBuilder.nodeBuilder().clusterName(cluster).node();
             es = node.client();
         }
